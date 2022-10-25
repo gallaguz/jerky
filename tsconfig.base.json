@@ -1,6 +1,11 @@
 {
     "compileOnSave": false,
     "compilerOptions": {
+        "strictNullChecks": true,
+        "removeComments": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "strictPropertyInitialization": false,
         "rootDir": ".",
         "sourceMap": true,
         "declaration": false,
