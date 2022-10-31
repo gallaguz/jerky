@@ -5,14 +5,7 @@
     ],
     "plugins": [
         "@nrwl/nx",
-        "@typescript-eslint/eslint-plugin",
-        "eslint-plugin-unused-imports"
-    ],
-    "extends": [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:import/recommended",
-        "plugin:import/typescript",
-        "plugin:prettier/recommended"
+        "prettier"
     ],
     "overrides": [
         {
@@ -26,7 +19,6 @@
                 "prettier/prettier": [
                     "error"
                 ],
-                "unused-imports/no-unused-imports": "error",
                 "@nrwl/nx/enforce-module-boundaries": [
                     "error",
                     {
@@ -40,27 +32,6 @@
                                 ]
                             }
                         ]
-                    }
-                ],
-                "import/order": [
-                    "error",
-                    {
-                        "groups": [
-                            "builtin",
-                            "external",
-                            "internal",
-                            [
-                                "sibling",
-                                "parent"
-                            ],
-                            "index",
-                            "unknown"
-                        ],
-                        "newlines-between": "always",
-                        "alphabetize": {
-                            "order": "asc",
-                            "caseInsensitive": true
-                        }
                     }
                 ]
             }
