@@ -34,8 +34,6 @@ export class UserQueriesController {
         return this.userQueriesService.findOneByEmail(dto.email);
     }
 
-    // TODO Find filtered
-
     @RMQValidate()
     @RMQRoute(UserFindFiltered.topic)
     public async findFiltered(

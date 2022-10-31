@@ -3,6 +3,7 @@ import {
     UserDelete,
     UserFindByEmail,
     UserFindByUuid,
+    UserFindFiltered,
     UserHealthCheck,
 } from '@jerky/contracts';
 import { NestApplication } from '@nestjs/core';
@@ -23,6 +24,7 @@ import { UserQueriesService } from '../services/user.queries.service';
 import { UserEventsService } from '../services/user.events.service';
 import { UserCommandsService } from '../services/user.commands.service';
 import { UserRepository } from '../repositories/user.repository';
+import { OrderBy } from '@jerky/interfaces';
 
 const CONSTANTS = {
     WRONG_PASSWORD: 'wrong_password',
@@ -153,9 +155,49 @@ describe('[User] Query Controller', () => {
         });
     });
 
-    // describe('Filtered', () => {
-    //     it('should ', async () => {
-    //         //
-    //     });
-    // });
+    describe('[Find Filtered]', () => {
+        it('No conditions', async () => {
+            const res = await userQueryController.findFiltered(
+                <UserFindFiltered.Request>{},
+            );
+
+            expect(res).toBeDefined();
+        });
+
+        it('Take 1, Skip 0', async () => {
+            const res = await userQueryController.findFiltered(<
+                UserFindFiltered.Request
+            >{ take: 1, skip: 0 });
+
+            expect(res.length).toEqual(1);
+        });
+
+        it('Asc', async () => {
+            const res = await userQueryController.findFiltered(<
+                UserFindFiltered.Request
+            >{ orderBy: OrderBy.ASC });
+
+            expect(res).toBeDefined();
+        });
+
+        it('Desc', async () => {
+            const res = await userQueryController.findFiltered(<
+                UserFindFiltered.Request
+            >{ orderBy: OrderBy.DESC });
+
+            expect(res[0].uuid).toEqual(createdInDbFakeUser.uuid);
+        });
+
+        it('searchString = createdInDbFakeUser.email', async () => {
+            const res = await userQueryController.findFiltered(<
+                UserFindFiltered.Request
+            >{ searchString: createdInDbFakeUser.email });
+
+            expect(
+                res.filter((el) => {
+                    return el.email === createdInDbFakeUser.email;
+                }).length,
+            ).toEqual(1);
+        });
+    });
 });
