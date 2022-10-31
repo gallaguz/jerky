@@ -48,10 +48,9 @@ describe('[User] Commands Controller', () => {
     });
 
     it('[CREATE]', async () => {
-        const user = await userCommandsController.create({
+        const user = await userCommandsController.create(<UserCreate.Request>{
             email: faker.internet.email(),
             passwordHash: hashSync(faker.internet.password(), 10),
-            role: Role.CUSTOMER,
         });
         createdInDbFakeUser = user;
         expect(user).toBeDefined();

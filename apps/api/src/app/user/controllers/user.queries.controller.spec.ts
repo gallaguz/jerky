@@ -9,7 +9,6 @@ import { ENVConfig, RMQConfig } from '../../../configs';
 import { faker } from '@faker-js/faker';
 import { UserCommandsController } from './user.commands.controller';
 import { hashSync } from 'bcryptjs';
-import { Role } from '@prisma/client';
 
 let fakeUser: UserCreate.Request;
 let createdInDbFakeUser: UserCreate.Response;
@@ -23,7 +22,6 @@ describe('[Api User] Query Controller', () => {
         fakeUser = {
             email: faker.internet.email(),
             passwordHash: hashSync(faker.internet.password(), 10),
-            role: Role.CUSTOMER,
         };
 
         const module: TestingModule = await Test.createTestingModule({

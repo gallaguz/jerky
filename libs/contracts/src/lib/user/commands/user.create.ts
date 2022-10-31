@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsString } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { Role, User } from '@prisma/client';
 
 export namespace UserCreate {
@@ -11,6 +11,7 @@ export namespace UserCreate {
         @IsString()
         passwordHash: string;
 
+        @IsOptional()
         @IsEnum(Role)
         role?: Role;
     }
