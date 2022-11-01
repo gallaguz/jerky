@@ -5,7 +5,7 @@ export namespace UserFindByUuid {
     export const topic = 'user.find-by-uuid.query';
 
     export class Request {
-        @IsUUID()
+        @IsUUID(4, { message: `uuid must be a valid UUID` })
         uuid: string;
     }
 
