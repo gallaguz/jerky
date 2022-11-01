@@ -11,15 +11,12 @@ import {
     UserUpdatePasswordHash,
     UserUpdateRole,
 } from '@jerky/contracts';
-import { UserEventEmitter } from '../event.emitters/user.event.emitter';
 import { UserEntity } from '../entities/user.entity';
+import { USER } from '@jerky/constants';
 
 @Injectable()
 export class UserCommandsService {
-    constructor(
-        private readonly userRepository: UserRepository,
-        private readonly userEventEmitter: UserEventEmitter,
-    ) {}
+    constructor(private readonly userRepository: UserRepository) {}
 
     public async create(dto: UserCreate.Request): Promise<User> {
         const { uuid, email, passwordHash, role } = await new UserEntity(
@@ -40,7 +37,7 @@ export class UserCommandsService {
     public async delete(uuid: string): Promise<User> {
         const deletedUser = await this.userRepository.delete(uuid);
 
-        if (!deletedUser) throw new NotFoundException('User not found');
+        if (!deletedUser) throw new NotFoundException(USER.NOT_FOUND);
 
         return deletedUser;
     }
@@ -54,7 +51,7 @@ export class UserCommandsService {
             uuid,
             passwordHash,
         );
-        if (!updatedUser) throw new NotFoundException('User not found');
+        if (!updatedUser) throw new NotFoundException(USER.NOT_FOUND);
         return updatedUser;
     }
 
@@ -67,7 +64,7 @@ export class UserCommandsService {
             uuid,
             userEntity.email,
         );
-        if (!updatedUser) throw new NotFoundException('User not found');
+        if (!updatedUser) throw new NotFoundException(USER.NOT_FOUND);
         return updatedUser;
     }
 
@@ -77,7 +74,7 @@ export class UserCommandsService {
             dto.uuid,
             userEntity.role,
         );
-        if (!updatedUser) throw new NotFoundException('User not found');
+        if (!updatedUser) throw new NotFoundException(USER.NOT_FOUND);
         return updatedUser;
     }
 }

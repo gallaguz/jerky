@@ -3,6 +3,7 @@ import { User } from '@prisma/client';
 import { UserRepository } from '../repositories/user.repository';
 import { UserFindFiltered } from '@jerky/contracts';
 import { RMQService } from 'nestjs-rmq';
+import { USER } from '@jerky/constants';
 
 @Injectable()
 export class UserQueriesService {
@@ -17,20 +18,19 @@ export class UserQueriesService {
 
     public async findOneByUuid(uuid: string): Promise<User> {
         const existedUser = await this.userRepository.findOneByUuid(uuid);
-        if (!existedUser) throw new NotFoundException('User not found');
+        if (!existedUser) throw new NotFoundException(USER.NOT_FOUND);
         return existedUser;
     }
 
     public async findOneByEmail(email: string): Promise<User> {
         const existedUser = await this.userRepository.findOneByEmail(email);
-        if (!existedUser) throw new NotFoundException('User not found');
+        if (!existedUser) throw new NotFoundException(USER.NOT_FOUND);
         return existedUser;
     }
 
     public async findFiltered(dto: UserFindFiltered.Request): Promise<User[]> {
         const filteredUsers = await this.userRepository.findFiltered(dto);
-        if (!filteredUsers.length)
-            throw new NotFoundException('Users not found');
+        if (!filteredUsers.length) throw new NotFoundException(USER.NOT_FOUND);
         return filteredUsers;
     }
 }
