@@ -20,6 +20,7 @@
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
+            "@jerky/constants": ["libs/constants/src/index.ts"],
             "@jerky/contracts": ["libs/contracts/src/index.ts"],
             "@jerky/interfaces": ["libs/interfaces/src/index.ts"]
         }

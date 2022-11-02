@@ -12,10 +12,10 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  uuid         String @unique
-  email        String @unique
-  passwordHash String @unique
-  role         Role   @default(USER)
+  uuid         String  @unique
+  email        String  @unique
+  passwordHash String  @unique
+  role         Role    @default(USER)
 }
 
 //model RefreshToken {
