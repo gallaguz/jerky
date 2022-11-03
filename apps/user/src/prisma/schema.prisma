@@ -1,10 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  output   = env("OUTPUT")
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  url      = env("USER_DATABASE_URL")
 }
 
 model User {
@@ -12,51 +13,11 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  uuid         String  @unique
-  email        String  @unique
-  passwordHash String  @unique
-  role         Role    @default(USER)
+  uuid         String @unique
+  email        String @unique
+  passwordHash String @unique
+  role         Role   @default(USER)
 }
-
-//model RefreshToken {
-//  id        Int      @id @default(autoincrement())
-//  createdAt DateTime @default(now())
-//  updatedAt DateTime @updatedAt
-//
-//  uuid      String   @unique
-//  user      User     @relation(fields: [userUuid], references: [uuid])
-//
-//  isActive  Boolean  @default(true)
-//  userUuid  String   @unique
-//  iat       DateTime
-//  token     String
-//
-//}
-//
-//model Address {
-//  id         Int      @id @default(autoincrement())
-//  createdAt  DateTime @default(now())
-//  updatedAt  DateTime @updatedAt
-//
-//  userUuid   String?
-//  user       User?    @relation(fields: [userUuid], references: [uuid])
-//
-//  isDefault  Boolean  @default(false)
-//  uuid       String   @unique
-//  text       String
-//  phone      String
-//
-//  firstName  String?
-//  middleName String?
-//  lastName   String?
-//  line1      String?
-//  line2      String?
-//  street     String?
-//  city       String?
-//  province   String?
-//  country    String?
-//
-//}
 
 enum Role {
   MODERATOR

@@ -1,10 +1,17 @@
-import { Injectable, OnModuleInit, INestApplication } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import {
+    Injectable,
+    OnModuleInit,
+    INestApplication,
+    Logger,
+} from '@nestjs/common';
+import { PrismaClient } from '@prisma/client/scripts/user-client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
     public async onModuleInit(): Promise<void> {
-        await this.$connect();
+        await this.$connect().then(() => {
+            Logger.log('[USER] Microservice successfully connected to DB!');
+        });
     }
 
     public async enableShutdownHooks(app: INestApplication): Promise<void> {
