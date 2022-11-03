@@ -1,5 +1,7 @@
 export enum USER {
     NOT_FOUND = 'User not found',
+    WRONG_PASSWORD = 'Wrong password',
+    USER_EXIST = 'User exist',
 }
 
 // Validation
