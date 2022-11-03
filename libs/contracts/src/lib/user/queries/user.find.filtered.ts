@@ -1,6 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { User } from '@prisma/client';
-import { OrderBy } from '@jerky/interfaces';
+import { IUser, OrderBy } from '@jerky/interfaces';
 import { ORDER_BY, SEARCH_STRING, SKIP, TAKE } from '@jerky/constants';
 
 export namespace UserFindFiltered {
@@ -26,5 +25,5 @@ export namespace UserFindFiltered {
         searchString?: string;
     }
 
-    export type Response = User[];
+    export type Response = IUser[];
 }

@@ -1,5 +1,5 @@
 import { IsEmail, IsUUID } from 'class-validator';
-import { User } from '@prisma/client';
+import { IUser } from '@jerky/interfaces';
 
 export namespace UserUpdateEmail {
     export const topic = 'user.update-email.command';
@@ -12,5 +12,5 @@ export namespace UserUpdateEmail {
         email: string;
     }
 
-    export type Response = User;
+    export type Response = IUser;
 }

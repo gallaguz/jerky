@@ -8,3 +8,4 @@ export * from './queries/user.find.uuid';
 export * from './queries/user.find.email';
 export * from './queries/user.find.filtered';
 export * from './queries/user.health.check';
+export * from './queries/user.validate';

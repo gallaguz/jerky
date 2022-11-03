@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
-import { Role, User } from '@prisma/client';
+import { IUser, Role } from '@jerky/interfaces';
 
 export namespace UserCreate {
     export const topic = 'user.create.command';
@@ -9,12 +9,12 @@ export namespace UserCreate {
         email: string;
 
         @IsString()
-        passwordHash: string;
+        password: string;
 
         @IsOptional()
         @IsEnum(Role)
         role?: Role;
     }
 
-    export type Response = User;
+    export type Response = IUser;
 }

@@ -1,5 +1,5 @@
 import { IsEmail } from 'class-validator';
-import { User } from '@prisma/client';
+import { IUser } from '@jerky/interfaces';
 
 export namespace UserFindByEmail {
     export const topic = 'user.find-by-email.query';
@@ -9,5 +9,5 @@ export namespace UserFindByEmail {
         email: string;
     }
 
-    export type Response = User;
+    export type Response = IUser;
 }

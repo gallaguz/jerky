@@ -1,5 +1,5 @@
 import { IsUUID } from 'class-validator';
-import { User } from '@prisma/client';
+import { IUser } from '@jerky/interfaces';
 
 export namespace UserFindByUuid {
     export const topic = 'user.find-by-uuid.query';
@@ -9,5 +9,5 @@ export namespace UserFindByUuid {
         uuid: string;
     }
 
-    export type Response = User;
+    export type Response = IUser;
 }

@@ -1,5 +1,5 @@
 import { IsString, IsUUID } from 'class-validator';
-import { User } from '@prisma/client';
+import { IUser } from '@jerky/interfaces';
 
 export namespace UserUpdatePasswordHash {
     export const topic = 'user.update-password-hash.command';
@@ -12,5 +12,5 @@ export namespace UserUpdatePasswordHash {
         passwordHash: string;
     }
 
-    export type Response = User;
+    export type Response = IUser;
 }

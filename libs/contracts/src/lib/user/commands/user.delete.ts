@@ -1,5 +1,5 @@
 import { IsUUID } from 'class-validator';
-import { User } from '@prisma/client';
+import { IUser } from '@jerky/interfaces';
 
 export namespace UserDelete {
     export const topic = 'user.delete.command';
@@ -9,5 +9,5 @@ export namespace UserDelete {
         uuid: string;
     }
 
-    export type Response = User;
+    export type Response = IUser;
 }

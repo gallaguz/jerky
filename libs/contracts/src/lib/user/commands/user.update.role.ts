@@ -1,5 +1,5 @@
 import { IsEnum, IsUUID } from 'class-validator';
-import { Role, User } from '@prisma/client';
+import { IUser, Role } from '@jerky/interfaces';
 
 export namespace UserUpdateRole {
     export const topic = 'user.update-role.command';
@@ -12,5 +12,5 @@ export namespace UserUpdateRole {
         role: Role;
     }
 
-    export type Response = User;
+    export type Response = IUser;
 }
