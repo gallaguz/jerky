@@ -15,6 +15,11 @@ export enum OrderBy {
     DESC = 'desc',
 }
 
+export interface ICredentials {
+    email: string;
+    password: string;
+}
+
 export interface IUser {
     id?: number;
     createdAt: Date;
