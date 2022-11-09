@@ -15,5 +15,6 @@ export const RMQConfig = (): IRMQServiceAsyncOptions => ({
         ],
         prefetchCount: 42,
         serviceName: 'api',
+        logMessages: configService.get('AMQP_LOG_MASSAGE') === 'true',
     }),
 });
