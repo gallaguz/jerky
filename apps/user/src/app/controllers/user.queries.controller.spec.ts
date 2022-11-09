@@ -12,10 +12,8 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ENVConfig } from '../../configs/env.config';
 import { faker } from '@faker-js/faker';
-import { Role, User } from '@prisma/client';
 import { UserQueriesController } from './user.queries.controller';
 import { NotFoundException } from '@nestjs/common';
-import { hashSync } from 'bcryptjs';
 import { DatabaseModule } from '../db/database.module';
 import { UserCommandsController } from './user.commands.controller';
 import { UserEventsController } from './user.events.controller';
@@ -24,7 +22,7 @@ import { UserQueriesService } from '../services/user.queries.service';
 import { UserEventsService } from '../services/user.events.service';
 import { UserCommandsService } from '../services/user.commands.service';
 import { UserRepository } from '../repositories/user.repository';
-import { OrderBy } from '@jerky/interfaces';
+import { IUser, OrderBy, Role } from '@jerky/interfaces';
 
 const CONSTANTS = {
     WRONG_PASSWORD: 'wrong_password',
@@ -33,7 +31,7 @@ const CONSTANTS = {
 };
 
 let fakeUser: UserCreate.Request;
-let createdInDbFakeUser: User;
+let createdInDbFakeUser: IUser;
 
 describe('[User] Query Controller', () => {
     let app: NestApplication;
@@ -43,7 +41,7 @@ describe('[User] Query Controller', () => {
     beforeAll(async () => {
         fakeUser = {
             email: faker.internet.email(),
-            passwordHash: hashSync(faker.internet.password()),
+            password: faker.internet.password(),
             role: Role.CUSTOMER,
         };
 

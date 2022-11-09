@@ -1,10 +1,11 @@
-import { Body, Controller } from '@nestjs/common';
+import { Body, Controller, Logger } from '@nestjs/common';
 
 import {
     UserFindByUuid,
     UserFindByEmail,
     UserHealthCheck,
     UserFindFiltered,
+    UserValidate,
 } from '@jerky/contracts';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import { UserQueriesService } from '../services/user.queries.service';
@@ -19,6 +20,14 @@ export class UserQueriesController {
     }
 
     @RMQValidate()
+    @RMQRoute(UserValidate.topic, {})
+    public async validate(
+        @Body() { email, password }: UserValidate.Request,
+    ): Promise<UserValidate.Response> {
+        return await this.userQueriesService.validate({ email, password });
+    }
+
+    @RMQValidate()
     @RMQRoute(UserFindByUuid.topic)
     public async findOneByUuid(
         @Body() { uuid }: UserFindByUuid.Request,
@@ -29,16 +38,21 @@ export class UserQueriesController {
     @RMQRoute(UserFindByEmail.topic)
     @RMQValidate()
     public async findOneByEmail(
-        @Body() dto: UserFindByEmail.Request,
+        @Body() { email }: UserFindByEmail.Request,
     ): Promise<UserFindByEmail.Response> {
-        return this.userQueriesService.findOneByEmail(dto.email);
+        return await this.userQueriesService.findOneByEmail(email);
     }
 
     @RMQValidate()
     @RMQRoute(UserFindFiltered.topic)
     public async findFiltered(
-        @Body() dto: UserFindFiltered.Request,
+        @Body() { searchString, skip, take, orderBy }: UserFindFiltered.Request,
     ): Promise<UserFindFiltered.Response> {
-        return this.userQueriesService.findFiltered(dto);
+        return this.userQueriesService.findFiltered({
+            searchString,
+            skip,
+            take,
+            orderBy,
+        });
     }
 }

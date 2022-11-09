@@ -2,22 +2,23 @@ import {
     ExceptionFilter,
     Catch,
     ArgumentsHost,
-    InternalServerErrorException,
+    HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
 
 @Catch()
-export class InternalServerErrorExceptionFilter implements ExceptionFilter {
-    catch(exception: InternalServerErrorException, host: ArgumentsHost): void {
+export class MyExceptionFilter implements ExceptionFilter {
+    catch(exception: any, host: ArgumentsHost): void {
         const ctx = host.switchToHttp();
-
-        // TODO
-
         const response = ctx.getResponse<Response>();
+        // const request = ctx.getRequest<Request>();
+        const status: HttpStatus = exception.status ?? HttpStatus.BAD_REQUEST;
+        const message = exception.message ?? 'Bad request';
 
-        response.status(404).json({
-            status: 404,
-            message: 'No such file or directory',
+        response.status(status).json({
+            statusCode: status,
+            message,
+            timestamp: new Date().toISOString(),
         });
     }
 }

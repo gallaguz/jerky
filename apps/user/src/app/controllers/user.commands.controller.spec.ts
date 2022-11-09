@@ -2,7 +2,7 @@ import {
     UserCreate,
     UserDelete,
     UserUpdateEmail,
-    UserUpdatePasswordHash,
+    UserUpdatePassword,
     UserUpdateRole,
 } from '@jerky/contracts';
 import { NestApplication } from '@nestjs/core';
@@ -11,14 +11,14 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ENVConfig } from '../../configs/env.config';
 import { faker } from '@faker-js/faker';
-import { Role, User } from '@prisma/client';
 import { DatabaseModule } from '../db/database.module';
 import { UserCommandsController } from './user.commands.controller';
-import { compare, hashSync } from 'bcryptjs';
 import { AppModule } from '../app.module';
+import { IUser, Role } from '@jerky/interfaces';
+import { UserEntity } from '../entities/user.entity';
 
-let createdInDbFakeUser: User;
-let createdInDbFakeUser2: User;
+let createdInDbFakeUser: IUser;
+let createdInDbFakeUser2: IUser;
 
 describe('[User] Commands Controller', () => {
     let app: NestApplication;
@@ -50,7 +50,8 @@ describe('[User] Commands Controller', () => {
     it('[CREATE]', async () => {
         const user = await userCommandsController.create(<UserCreate.Request>{
             email: faker.internet.email(),
-            passwordHash: hashSync(faker.internet.password(), 10),
+            password: faker.internet.password(),
+            role: Role.ADMIN,
         });
         createdInDbFakeUser = user;
         expect(user).toBeDefined();
@@ -59,26 +60,26 @@ describe('[User] Commands Controller', () => {
     it('[CREATE] Without Role', async () => {
         const user = await userCommandsController.create(<UserCreate.Request>{
             email: faker.internet.email(),
-            passwordHash: hashSync(faker.internet.password(), 10),
+            password: faker.internet.password(),
         });
         createdInDbFakeUser2 = user;
         expect(user).toBeDefined();
     });
 
-    it('[UPDATE PASSWORD HASH]', async () => {
+    it('[UPDATE PASSWORD]', async () => {
         const newPassword = faker.internet.password();
-        const newPasswordHash = hashSync(newPassword, 10);
 
-        const user = await userCommandsController.updatePasswordHash(<
-            UserUpdatePasswordHash.Request
+        const user = await userCommandsController.updatePassword(<
+            UserUpdatePassword.Request
         >{
             uuid: createdInDbFakeUser.uuid,
-            passwordHash: newPasswordHash,
+            password: newPassword,
         });
 
-        expect(user).toBeDefined();
-        expect(user.passwordHash).toEqual(newPasswordHash);
-        expect(await compare(newPassword, user.passwordHash));
+        const userEntity = new UserEntity(user.email, user.passwordHash);
+
+        expect(userEntity).toBeDefined();
+        expect(await userEntity.validatePassword(newPassword)).toEqual(true);
     });
 
     it('[UPDATE EMAIL]', async () => {

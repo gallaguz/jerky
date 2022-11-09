@@ -1,12 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { Role, User } from '@prisma/client';
+import { Injectable, Logger } from '@nestjs/common';
 
-import { PrismaService } from '../db/prisma.service';
+import { DbService } from '../db/db.service';
 import { UserFindFiltered } from '@jerky/contracts';
+import { Role } from '@jerky/interfaces';
+import { User } from '@prisma/client/scripts/user-client';
+import { SOMETHING_WENT_WRONG } from '@jerky/constants';
 
 @Injectable()
 export class UserRepository {
-    constructor(private readonly prismaService: PrismaService) {}
+    constructor(private readonly prismaService: DbService) {}
 
     public async create(
         uuid: string,
@@ -14,54 +16,103 @@ export class UserRepository {
         passwordHash: string,
         role?: Role,
     ): Promise<User | null> {
-        return await this.prismaService.user.create({
-            data: { uuid, email, passwordHash, role },
-        });
+        try {
+            return await this.prismaService.user.create({
+                data: { uuid, email, passwordHash, role },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 
     public async delete(uuid: string): Promise<User | null> {
-        return await this.prismaService.user.delete({
-            where: { uuid },
-        });
+        try {
+            return await this.prismaService.user.delete({
+                where: { uuid },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 
     public async findOneByEmail(email: string): Promise<User | null> {
-        return await this.prismaService.user.findUnique({
-            where: { email },
-        });
+        try {
+            return await this.prismaService.user.findUnique({
+                where: { email },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 
     public async findOneByUuid(uuid: string): Promise<User | null> {
-        return await this.prismaService.user.findFirst({
-            where: { uuid },
-        });
+        try {
+            return await this.prismaService.user.findFirst({
+                where: { uuid },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 
     public async updateEmail(
         uuid: string,
         email: string,
     ): Promise<User | null> {
-        return await this.prismaService.user.update({
-            where: { uuid },
-            data: { email },
-        });
+        try {
+            return await this.prismaService.user.update({
+                where: { uuid },
+                data: { email },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 
     public async updatePasswordHash(
         uuid: string,
         passwordHash: string,
     ): Promise<User | null> {
-        return await this.prismaService.user.update({
-            where: { uuid },
-            data: { passwordHash },
-        });
+        try {
+            return await this.prismaService.user.update({
+                where: { uuid },
+                data: { passwordHash },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 
     public async updateRole(uuid: string, role: Role): Promise<User | null> {
-        return await this.prismaService.user.update({
-            where: { uuid },
-            data: { role },
-        });
+        try {
+            return await this.prismaService.user.update({
+                where: { uuid },
+                data: { role },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 
     public async findFiltered({
@@ -69,21 +120,28 @@ export class UserRepository {
         skip,
         take,
         orderBy,
-    }: UserFindFiltered.Request): Promise<User[]> {
-        const or = searchString
-            ? {
-                  OR: [{ email: { contains: searchString } }],
-              }
-            : {};
-        return this.prismaService.user.findMany({
-            where: {
-                ...or,
-            },
-            take: Number(take) || 10,
-            skip: Number(skip) || undefined,
-            orderBy: {
-                createdAt: orderBy,
-            },
-        });
+    }: UserFindFiltered.Request): Promise<User[] | null> {
+        try {
+            const or = searchString
+                ? {
+                      OR: [{ email: { contains: searchString } }],
+                  }
+                : {};
+            return await this.prismaService.user.findMany({
+                where: {
+                    ...or,
+                },
+                take: Number(take) || 10,
+                skip: Number(skip) || undefined,
+                orderBy: {
+                    createdAt: orderBy,
+                },
+            });
+        } catch (e) {
+            if (e instanceof Error) {
+                Logger.error(SOMETHING_WENT_WRONG);
+            }
+            return null;
+        }
     }
 }

@@ -3,7 +3,7 @@ import { Body, Controller, Param } from '@nestjs/common';
 import {
     UserCreate,
     UserDelete,
-    UserUpdatePasswordHash,
+    UserUpdatePassword,
     UserUpdateEmail,
     UserUpdateRole,
 } from '@jerky/contracts';
@@ -31,11 +31,11 @@ export class UserCommandsController {
     }
 
     @RMQValidate()
-    @RMQRoute(UserUpdatePasswordHash.topic)
-    public async updatePasswordHash(
-        @Body() user: UserUpdatePasswordHash.Request,
-    ): Promise<UserUpdatePasswordHash.Response> {
-        return this.userCommandsService.updatePasswordHash(user);
+    @RMQRoute(UserUpdatePassword.topic)
+    public async updatePassword(
+        @Body() user: UserUpdatePassword.Request,
+    ): Promise<UserUpdatePassword.Response> {
+        return this.userCommandsService.updatePassword(user);
     }
 
     @RMQValidate()
