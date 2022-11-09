@@ -1,7 +1,6 @@
 import { NestApplication } from '@nestjs/core';
 import { RMQModule } from 'nestjs-rmq';
 import {
-    UserCreate,
     UserDelete,
     UserFindByEmail,
     UserFindByUuid,
@@ -10,63 +9,74 @@ import {
 } from '@jerky/contracts';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
-import { AppModule } from '../../app.module';
 import { ENVConfig, RMQConfig } from '../../../configs';
 import { faker } from '@faker-js/faker';
-import { UserCommandsController } from './user.commands.controller';
-import { hashSync } from 'bcryptjs';
+import { ApiUserCommandsController } from '../commands/api.user.commands.controller';
 import * as request from 'supertest';
-import { AnyExceptionFilter } from '../exeptions/any-exception.filter';
-import { OrderBy } from '@jerky/interfaces';
-import { ORDER_BY, SEARCH_STRING, SKIP, TAKE, USER } from '@jerky/constants';
+import { IUser, OrderBy, Role } from '@jerky/interfaces';
+import {
+    ORDER_BY,
+    SEARCH_STRING,
+    SKIP,
+    SOMETHING_WENT_WRONG,
+    TAKE,
+    USER,
+} from '@jerky/constants';
+import { delay } from 'rxjs';
+import { ApiUserModule } from '../api.user.module';
 
-let fakeUser: UserCreate.Request;
-let createdInDbFakeUser: UserCreate.Response;
+const createdUsers: IUser[] = [];
 
 describe('[Api User] Query Controller', () => {
-    let apiMicroservice: NestApplication;
-    let userCommandsController: UserCommandsController;
+    let apiUserMicroservice: NestApplication;
+    let userCommandsController: ApiUserCommandsController;
 
     beforeAll(async () => {
-        fakeUser = {
+        const fakeUser = {
             email: faker.internet.email(),
-            passwordHash: hashSync(faker.internet.password(), 10),
+            password: faker.internet.password(),
         };
 
         const apiModule: TestingModule = await Test.createTestingModule({
             imports: [
                 ConfigModule.forRoot(ENVConfig()),
                 RMQModule.forRootAsync(RMQConfig()),
-                AppModule,
+                ApiUserModule,
             ],
         }).compile();
 
-        apiMicroservice = apiModule.createNestApplication();
-        apiMicroservice.useGlobalFilters(new AnyExceptionFilter());
+        apiUserMicroservice = apiModule.createNestApplication();
 
-        userCommandsController = apiMicroservice.get<UserCommandsController>(
-            UserCommandsController,
-        );
+        userCommandsController =
+            apiUserMicroservice.get<ApiUserCommandsController>(
+                ApiUserCommandsController,
+            );
 
-        await apiMicroservice.init();
+        await apiUserMicroservice.init();
 
-        createdInDbFakeUser = await userCommandsController.create(fakeUser);
-
-        expect(createdInDbFakeUser).toBeDefined();
+        createdUsers.push(await userCommandsController.create(fakeUser));
+        expect(createdUsers.length).toEqual(1);
     });
 
     afterAll(async () => {
-        if (createdInDbFakeUser) {
-            await userCommandsController.delete(<UserDelete.Request>{
-                uuid: createdInDbFakeUser.uuid,
+        try {
+            createdUsers.forEach((user) => {
+                userCommandsController.delete(<UserDelete.Request>{
+                    uuid: user.uuid,
+                });
             });
+        } catch (e) {
+            throw new Error('Cant delete created fake users');
         }
 
-        await apiMicroservice.close();
+        createdUsers.length = 0;
+
+        await delay(500);
+        await apiUserMicroservice.close();
     });
 
-    it('[GET /v1/user/ 200] /healthCheck ', function () {
-        return request(apiMicroservice.getHttpServer())
+    it('[/v1/user/healthCheck GET] /healthCheck ', function () {
+        return request(apiUserMicroservice.getHttpServer())
             .get(`/v1/user/healthCheck`)
             .expect(200)
             .then(({ body }: request.Response) => {
@@ -76,54 +86,46 @@ describe('[Api User] Query Controller', () => {
 
     describe('[SEARCH]', () => {
         describe('[UUID]', () => {
-            it('[/GET 200] - correct uuid [expect:  user]', async () => {
-                return request(apiMicroservice.getHttpServer())
-                    .get(`/v1/user/${createdInDbFakeUser.uuid}`)
+            it('[/v1/user/:uuid GET 200] - correct uuid [expect:  user]', async () => {
+                const user = createdUsers.find((u) => u.role === Role.USER);
+                if (!user) throw new Error(SOMETHING_WENT_WRONG);
+
+                return request(apiUserMicroservice.getHttpServer())
+                    .get(`/v1/user/${user.uuid}`)
                     .expect(200)
                     .then(({ body }: request.Response) => {
                         expect(<UserFindByUuid.Response>body.uuid).toEqual(
-                            createdInDbFakeUser.uuid,
+                            user.uuid,
                         );
                     });
             });
 
-            it('[/GET 400]- wrong uuid [expect: User not found]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/:uuid GET]- wrong uuid [expect: User not found]', async () => {
+                return request(apiUserMicroservice.getHttpServer())
                     .get('/v1/user/6784df71-4dbc-4a5a-b1bf-7a35bdb5dc4e')
-                    .expect(400)
+                    .expect(404)
                     .then(({ body }: request.Response) => {
                         expect(body.message).toEqual(USER.NOT_FOUND);
                     });
             });
 
-            it('[/GET 400] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/:uuid GET] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
+                return request(apiUserMicroservice.getHttpServer())
                     .get('/v1/user/42')
                     .expect(400)
                     .then(({ body }: request.Response) => {
-                        expect(body.message).toEqual(
+                        expect(body.message[0]).toEqual(
                             'uuid must be a valid UUID',
                         );
                     });
             });
 
-            it('[/GET 400] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
-                return request(apiMicroservice.getHttpServer())
-                    .get('/v1/user/042')
-                    .expect(400)
-                    .then(({ body }: request.Response) => {
-                        expect(body.message).toEqual(
-                            'uuid must be a valid UUID',
-                        );
-                    });
-            });
-
-            it('[/GET 400] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/:uuid GET] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
+                return request(apiUserMicroservice.getHttpServer())
                     .get('/v1/user/not-valid-u-i-d')
                     .expect(400)
                     .then(({ body }: request.Response) => {
-                        expect(body.message).toEqual(
+                        expect(body.message[0]).toEqual(
                             'uuid must be a valid UUID',
                         );
                     });
@@ -131,56 +133,61 @@ describe('[Api User] Query Controller', () => {
         });
 
         describe('[EMAIL]', () => {
-            it('[/POST 200] - correct email [expect: user]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/email POST] - correct email [expect: user]', async () => {
+                const user = createdUsers.find((u) => u.role === Role.USER);
+                if (!user) throw new Error(SOMETHING_WENT_WRONG);
+
+                return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/email')
                     .send(<UserFindByEmail.Request>{
-                        email: createdInDbFakeUser.email,
+                        email: user.email,
                     })
                     .expect(200)
                     .then(({ body }: request.Response) => {
                         expect(<UserFindByEmail.Response>body.email).toEqual(
-                            createdInDbFakeUser.email,
+                            user.email,
                         );
                     });
             });
 
-            it('[/POST 400] - wrong email [expect: User not found]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/email POST] - wrong email [expect: User not found]', async () => {
+                return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/email')
                     .send(<UserFindByEmail.Request>{
                         email: 'wrong@email.com',
                     })
-                    .expect(400)
+                    .expect(404)
                     .then(({ body }: request.Response) => {
                         expect(body.message).toEqual(USER.NOT_FOUND);
                     });
             });
 
-            it('[/POST 400] - not valid email [expect: email must be an email]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/email POST] - not valid email [expect: email must be an email]', async () => {
+                return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/email')
                     .send(<UserFindByEmail.Request>{
                         email: 'not.valid.email',
                     })
                     .expect(400)
                     .then(({ body }: request.Response) => {
-                        expect(body.message).toEqual('email must be an email');
+                        expect(body.message[0]).toEqual(
+                            'email must be an email',
+                        );
                     });
             });
 
-            it('[/POST 400] - not valid email [expect: email must be an email]', async () => {
+            it('[/v1/user/email POST] - not valid email [expect: email must be an email]', async () => {
                 return (
-                    request(apiMicroservice.getHttpServer())
+                    request(apiUserMicroservice.getHttpServer())
                         .post('/v1/user/email')
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore
                         .send(<UserFindByEmail.Request>{
                             email: 42,
                         })
-                        .expect(400)
+                        // .expect(400)
                         .then(({ body }: request.Response) => {
-                            expect(body.message).toEqual(
+                            expect(body.message[0]).toEqual(
                                 'email must be an email',
                             );
                         })
@@ -189,8 +196,11 @@ describe('[Api User] Query Controller', () => {
         });
 
         describe('[FILTERED]', () => {
-            it('[/POST 200] find last created user [expect: user]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/find POST] find last created user [expect: user]', async () => {
+                const user = createdUsers.find((u) => u.role === Role.USER);
+                if (!user) throw new Error(SOMETHING_WENT_WRONG);
+
+                return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/find')
                     .send(<UserFindFiltered.Request>{
                         searchString: '',
@@ -201,28 +211,43 @@ describe('[Api User] Query Controller', () => {
                     .expect(200)
                     .then(({ body }: request.Response) => {
                         expect(<UserFindFiltered.Response>body[0].uuid).toEqual(
-                            createdInDbFakeUser.uuid,
+                            user.uuid,
                         );
                     });
             });
 
-            it('[/POST 200] find by email [expect: user]', async () => {
-                return request(apiMicroservice.getHttpServer())
+            it('[/v1/user/find POST] find by email [expect: user]', async () => {
+                const user = createdUsers.find((u) => u.role === Role.USER);
+                if (!user) throw new Error(SOMETHING_WENT_WRONG);
+
+                return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/find')
                     .send(<UserFindFiltered.Request>{
-                        searchString: createdInDbFakeUser.email,
+                        searchString: user.email,
                     })
                     .expect(200)
                     .then(({ body }: request.Response) => {
                         expect(<UserFindFiltered.Response>body[0].uuid).toEqual(
-                            createdInDbFakeUser.uuid,
+                            user.uuid,
                         );
                     });
             });
 
-            it('[/POST 400] All params wrong [expect: 4 exception]', async () => {
+            it('[/v1/user/find POST] find by wrong email [User not found]', async () => {
+                return request(apiUserMicroservice.getHttpServer())
+                    .post('/v1/user/find')
+                    .send(<UserFindFiltered.Request>{
+                        searchString: 'wrong@email.com',
+                    })
+                    .expect(404)
+                    .then(({ body }: request.Response) => {
+                        expect(body.message).toEqual(USER.NOT_FOUND);
+                    });
+            });
+
+            it('[/v1/user/find POST] All params wrong [expect: 4 exception]', async () => {
                 return (
-                    request(apiMicroservice.getHttpServer())
+                    request(apiUserMicroservice.getHttpServer())
                         .post('/v1/user/find')
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                         // @ts-ignore

@@ -1,52 +1,63 @@
-import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Param,
+    Patch,
+    Post,
+    UsePipes,
+    ValidationPipe,
+} from '@nestjs/common';
 
-import { UserEventsService } from '../services/user.events.service';
 import { RMQService } from 'nestjs-rmq';
-import { UserCommandsService } from '../services/user.commands.service';
+import { ApiUserCommandsService } from './api.user.commands.service';
 import {
     UserCreate,
     UserDelete,
     UserUpdateEmail,
-    UserUpdatePasswordHash,
+    UserUpdatePassword,
     UserUpdateRole,
 } from '@jerky/contracts';
 
 @Controller('v1/user')
-export class UserCommandsController {
+export class ApiUserCommandsController {
     constructor(
-        private readonly userService: UserEventsService,
         private readonly rmqService: RMQService,
-        private readonly userCommandsService: UserCommandsService,
+        private readonly userCommandsService: ApiUserCommandsService,
     ) {}
 
+    @UsePipes(new ValidationPipe())
     @Post()
     public async create(
-        @Body() { email, passwordHash, role }: UserCreate.Request,
+        @Body() { email, password, role }: UserCreate.Request,
     ): Promise<UserCreate.Response> {
         return await this.userCommandsService.create({
             email,
-            passwordHash,
+            password,
             role,
         });
     }
 
+    @UsePipes(new ValidationPipe())
     @Delete(':uuid')
     public async delete(
-        @Param('uuid') { uuid }: UserDelete.Request,
+        @Param() { uuid }: UserDelete.Request,
     ): Promise<UserDelete.Response> {
         return await this.userCommandsService.delete(uuid);
     }
 
+    @UsePipes(new ValidationPipe())
     @Patch('password')
     public async updatePasswordHash(
-        @Body() { uuid, passwordHash }: UserUpdatePasswordHash.Request,
-    ): Promise<UserUpdatePasswordHash.Response> {
-        return this.userCommandsService.updatePasswordHash({
+        @Body() { uuid, password }: UserUpdatePassword.Request,
+    ): Promise<UserUpdatePassword.Response> {
+        return this.userCommandsService.updatePassword({
             uuid,
-            passwordHash,
+            password,
         });
     }
 
+    @UsePipes(new ValidationPipe())
     @Patch('email')
     public async updatePasswordEmail(
         @Body() { uuid, email }: UserUpdateEmail.Request,
@@ -54,6 +65,7 @@ export class UserCommandsController {
         return this.userCommandsService.updateEmail({ uuid, email });
     }
 
+    @UsePipes(new ValidationPipe())
     @Patch('role')
     public async updatePasswordRole(
         @Body() { uuid, role }: UserUpdateRole.Request,

@@ -4,13 +4,17 @@ import { RMQConfig, ENVConfig } from '../configs';
 import { RMQModule } from 'nestjs-rmq';
 import { ConfigModule } from '@nestjs/config';
 
-import { UserModule } from './user/user.module';
+import { ApiUserModule } from './api.user/api.user.module';
+import { ApiAuthModule } from './api.auth/api.auth.module';
+import { UUUIDService } from './common/uuid.service';
 
 @Module({
     imports: [
         ConfigModule.forRoot(ENVConfig()),
         RMQModule.forRootAsync(RMQConfig()),
-        UserModule,
+        ApiUserModule,
+        ApiAuthModule,
     ],
+    providers: [UUUIDService],
 })
-export class AppModule {}
+export class ApiModule {}
