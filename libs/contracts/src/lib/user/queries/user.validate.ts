@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, Length } from 'class-validator';
 import { IUser } from '@jerky/interfaces';
 
 export namespace UserValidate {
@@ -9,6 +9,7 @@ export namespace UserValidate {
         email: string;
 
         @IsString()
+        @Length(8, 64)
         password: string;
     }
 

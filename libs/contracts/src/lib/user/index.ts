@@ -1,7 +1,7 @@
 export * from './commands/user.create';
 export * from './commands/user.delete';
 export * from './commands/user.update.email';
-export * from './commands/user.update.passwordHash';
+export * from './commands/user.update.password';
 export * from './commands/user.update.role';
 
 export * from './queries/user.find.uuid';
