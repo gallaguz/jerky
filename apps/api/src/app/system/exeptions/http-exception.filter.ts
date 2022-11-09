@@ -3,10 +3,8 @@ import {
     Catch,
     ArgumentsHost,
     HttpException,
-    HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { RMQError } from 'nestjs-rmq';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
