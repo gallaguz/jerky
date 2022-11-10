@@ -1,10 +1,12 @@
 import { IsJWT } from 'class-validator';
 
-export const topic = 'auth.logout.command';
+export namespace AuthLogout {
+    export const topic = 'auth.logout.command';
 
-export class Request {
-    @IsJWT()
-    refreshToken: string;
+    export class Request {
+        @IsJWT()
+        refreshToken: string;
+    }
+
+    export class Response {}
 }
-
-export class Response {}
