@@ -10,7 +10,7 @@
         "test": "nx test",
         "test:cov": "npx jest --coverage"
     },
-    "private": true,
+    "private": false,
     "dependencies": {
         "@nestjs/common": "^9.0.0",
         "@nestjs/config": "^2.2.0",

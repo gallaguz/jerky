@@ -33,13 +33,13 @@ export abstract class UserBase {
         this._uuid = uuid();
     }
 
-    // public async setPassword(password: string): Promise<this> {
-    //     const salt = await genSalt(10);
-    //     this._passwordHash = await hash(password, salt);
-    //     return this;
-    // }
-    //
-    // public validatePassword(password: string): Promise<boolean> {
-    //     return compare(password, this._passwordHash);
+    // protected excludePrivateProperties<User, Key extends keyof User>(
+    //     user: User,
+    //     ...keys: Key[]
+    // ): Omit<User, Key> {
+    //     for (const key of keys) {
+    //         delete user[key];
+    //     }
+    //     return user;
     // }
 }

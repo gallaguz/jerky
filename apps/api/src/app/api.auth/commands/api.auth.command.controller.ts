@@ -19,6 +19,7 @@ import {
 import { JwtGuard } from '../../system/guards/jwt.guard';
 import { Cookies } from '../../system/decorators/cookies.decorator';
 import { SetAuthCookiesInterceptor } from '../../system/interceptors/set.auth.cookies.interceptor';
+import { UnsetAuthCookiesInterceptor } from '../../system/interceptors/unset.auth.cookies.interceptor';
 
 @Controller('v1/auth')
 export class ApiAuthCommandController {
@@ -59,15 +60,6 @@ export class ApiAuthCommandController {
         return { accessToken, refreshToken };
     }
 
-    @HttpCode(200)
-    @UseGuards(new JwtGuard())
-    @Post('logout')
-    public async logout(
-        @Body() { refreshToken }: AuthLogout.Request,
-    ): Promise<AuthLogout.Response> {
-        return this.authCommandsService.logout({ refreshToken });
-    }
-
     @UseInterceptors(SetAuthCookiesInterceptor)
     @HttpCode(200)
     @UseGuards(new JwtGuard())
@@ -83,5 +75,15 @@ export class ApiAuthCommandController {
         return await this.authCommandsService.refresh({
             refreshToken,
         });
+    }
+
+    @UseInterceptors(UnsetAuthCookiesInterceptor)
+    // @HttpCode(401)
+    @UseGuards(new JwtGuard())
+    @Get('logout')
+    public async logout(
+        @Cookies('refreshToken') refreshToken: string,
+    ): Promise<AuthLogout.Response> {
+        return this.authCommandsService.logout({ refreshToken });
     }
 }

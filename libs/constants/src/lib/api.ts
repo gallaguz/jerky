@@ -1,1 +1,3 @@
-export const a = '';
+export enum JWT {
+    EXPIRED = 'jwt expired',
+}

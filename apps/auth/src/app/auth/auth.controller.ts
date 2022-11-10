@@ -74,14 +74,6 @@ export class AuthController {
     public async refresh(
         @Body() { refreshToken }: AuthRefresh.Request,
     ): Promise<AuthRefresh.Response> {
-        try {
-            return await this.authService.refresh(refreshToken);
-        } catch (e) {
-            if (e instanceof Error) {
-                this.logger.error(e);
-            }
-
-            throw new UnauthorizedException('1');
-        }
+        return await this.authService.refresh(refreshToken);
     }
 }
