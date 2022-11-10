@@ -3,27 +3,29 @@ import {
     Controller,
     Get,
     HttpCode,
-    Logger,
+    Inject,
     Post,
     Res,
     UnauthorizedException,
     UseGuards,
-    UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiAuthCommandsService } from './api.auth.commands.service';
 import { ApiLogin, ApiLogout, ApiRefresh, ApiRegister } from '@jerky/contracts';
 import { JwtGuard } from '../../system/guards/jwt.guard';
 import { Cookies } from '../../system/decorators/cookies.decorator';
-import { UnsetAuthCookiesInterceptor } from '../../system/interceptors/unset.auth.cookies.interceptor';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { Logger } from 'winston';
 
 @Controller('v1/auth')
 export class ApiAuthCommandController {
     constructor(
         private readonly authCommandsService: ApiAuthCommandsService,
-        private readonly logger: Logger,
+        @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger, // private readonly logger: Logger,
     ) {
-        this.logger = new Logger(ApiAuthCommandController.name);
+        this.logger.debug('init', {
+            controller: ApiAuthCommandController.name,
+        });
     }
 
     // @UseInterceptors(SetAuthCookiesInterceptor)

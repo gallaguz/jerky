@@ -11,7 +11,8 @@ async function bootstrap(): Promise<void> {
     app.use(cookieParser());
     const port = process.env.PORT || 3333;
     await app.listen(port);
-    Logger.log(
+    const logger = new Logger(bootstrap.name);
+    logger.verbose(
         `[API] Microservice is running on: http://localhost:${port}/${globalPrefix}`,
     );
 }
