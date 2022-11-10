@@ -59,8 +59,8 @@ describe('API USER Commands Controller', () => {
         await apiUser.close();
     });
 
-    describe('[CREATE]', () => {
-        it('[/v1/user POST] create user', async () => {
+    describe('[/v1/user CREATE]', () => {
+        it('[/ POST] create user', async () => {
             const fakeUser: UserCreate.Request = {
                 email: faker.internet.email(),
                 password: faker.internet.password(),
@@ -83,8 +83,7 @@ describe('API USER Commands Controller', () => {
 
             createdUsers.push(newCreatedUser);
         });
-
-        it('[/v1/user POST] create user with role: USER', async () => {
+        it('[/ POST] create user with role: USER', async () => {
             const fakeUser: UserCreate.Request = {
                 email: faker.internet.email(),
                 password: faker.internet.password(),
@@ -109,8 +108,7 @@ describe('API USER Commands Controller', () => {
 
             createdUsers.push(newCreatedUser);
         });
-
-        it('[/v1/user POST] create user with role: ADMIN', async () => {
+        it('[/ POST] create user with role: ADMIN', async () => {
             const fakeUser: UserCreate.Request = {
                 email: faker.internet.email(),
                 password: faker.internet.password(),
@@ -135,8 +133,7 @@ describe('API USER Commands Controller', () => {
 
             createdUsers.push(newCreatedAdmin);
         });
-
-        it('[/v1/user POST] not valid email (string)', async () => {
+        it('[/ POST] not valid email (string)', async () => {
             const fakeUser: UserCreate.Request = {
                 email: 'not.valid.email',
                 password: faker.internet.password(),
@@ -155,8 +152,7 @@ describe('API USER Commands Controller', () => {
                     ).toEqual(true);
                 });
         });
-
-        it('[/v1/user POST] not valid email (number)', async () => {
+        it('[/ POST] not valid email (number)', async () => {
             const fakeUser: UserCreate.Request = {
                 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                 // @ts-ignore
@@ -180,8 +176,7 @@ describe('API USER Commands Controller', () => {
                     ).toEqual(true);
                 });
         });
-
-        it('[/v1/user POST] user exist', async () => {
+        it('[/ POST] user exist', async () => {
             const user = createdUsers.find((u) => u.role === Role.USER);
             if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -203,9 +198,9 @@ describe('API USER Commands Controller', () => {
         });
     });
 
-    describe('[UPDATE]', () => {
+    describe('[v1/user UPDATE]', () => {
         describe('[PASSWORD]', () => {
-            it('[/v1/user POST]', async () => {
+            it('[/ POST]', async () => {
                 const user = createdUsers[0];
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -222,8 +217,7 @@ describe('API USER Commands Controller', () => {
                         );
                     });
             });
-
-            it('[/v1/user POST] wrong uuid', async () => {
+            it('[/ POST] wrong uuid', async () => {
                 await request(apiUser.getHttpServer())
                     .patch('/v1/user/password')
                     .send(<UserUpdatePassword.Request>{
@@ -235,8 +229,7 @@ describe('API USER Commands Controller', () => {
                         expect(body.message).toEqual(USER.NOT_FOUND);
                     });
             });
-
-            it('[/v1/user POST] not valid uuid (string uuid-like)', async () => {
+            it('[/ POST] not valid uuid (string uuid-like)', async () => {
                 await request(apiUser.getHttpServer())
                     .patch('/v1/user/password')
                     .send(<UserUpdatePassword.Request>{
@@ -250,8 +243,7 @@ describe('API USER Commands Controller', () => {
                         ).toEqual(true);
                     });
             });
-
-            it('[/v1/user POST] not valid uuid (string)', async () => {
+            it('[/ POST] not valid uuid (string)', async () => {
                 await request(apiUser.getHttpServer())
                     .patch('/v1/user/password')
                     .send(<UserUpdatePassword.Request>{
@@ -265,8 +257,7 @@ describe('API USER Commands Controller', () => {
                         ).toEqual(true);
                     });
             });
-
-            it('[/v1/user POST] not valid uuid (number)', async () => {
+            it('[/ POST] not valid uuid (number)', async () => {
                 await request(apiUser.getHttpServer())
                     .patch('/v1/user/password')
                     .send({
@@ -283,8 +274,7 @@ describe('API USER Commands Controller', () => {
                         ).toEqual(true);
                     });
             });
-
-            it('[/v1/user POST] short password', async () => {
+            it('[/ POST] short password', async () => {
                 const user = createdUsers[0];
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -301,8 +291,7 @@ describe('API USER Commands Controller', () => {
                         ).toEqual(true);
                     });
             });
-
-            it('[/v1/user POST] long password (64 * "a")', async () => {
+            it('[/ POST] long password (64 * "a")', async () => {
                 const user = createdUsers[0];
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -321,8 +310,7 @@ describe('API USER Commands Controller', () => {
                         ).toEqual(true);
                     });
             });
-
-            it('[/v1/user POST] not valid password (number)', async () => {
+            it('[/ POST] not valid password (number)', async () => {
                 const user = createdUsers[0];
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -364,15 +352,15 @@ describe('API USER Commands Controller', () => {
         // });
     });
 
-    describe('[DELETE]', () => {
-        it('', () => {
-            //
-        });
-        it('', () => {
-            //
-        });
-        it('', () => {
-            //
-        });
-    });
+    // describe('[DELETE]', () => {
+    //     it('', () => {
+    //         //
+    //     });
+    //     it('', () => {
+    //         //
+    //     });
+    //     it('', () => {
+    //         //
+    //     });
+    // });
 });

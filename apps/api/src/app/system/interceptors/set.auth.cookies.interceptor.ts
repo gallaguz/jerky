@@ -2,6 +2,7 @@ import {
     CallHandler,
     ExecutionContext,
     Injectable,
+    Logger,
     NestInterceptor,
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
@@ -17,6 +18,7 @@ export class SetAuthCookiesInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             tap((data: ITokens) => {
+                Logger.verbose(response.data);
                 response.cookie('refreshToken', data.refreshToken, {
                     expires: new Date(new Date().getTime() + 30 * 1000),
                     sameSite: 'strict',

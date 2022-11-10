@@ -84,9 +84,9 @@ describe('[Api User] Query Controller', () => {
             });
     });
 
-    describe('[SEARCH]', () => {
+    describe('[v1/user/ SEARCH]', () => {
         describe('[UUID]', () => {
-            it('[/v1/user/:uuid GET 200] - correct uuid [expect:  user]', async () => {
+            it('[/:uuid GET 200] - correct uuid [expect:  user]', async () => {
                 const user = createdUsers.find((u) => u.role === Role.USER);
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -99,8 +99,7 @@ describe('[Api User] Query Controller', () => {
                         );
                     });
             });
-
-            it('[/v1/user/:uuid GET]- wrong uuid [expect: User not found]', async () => {
+            it('[/:uuid GET]- wrong uuid [expect: User not found]', async () => {
                 return request(apiUserMicroservice.getHttpServer())
                     .get('/v1/user/6784df71-4dbc-4a5a-b1bf-7a35bdb5dc4e')
                     .expect(404)
@@ -108,8 +107,7 @@ describe('[Api User] Query Controller', () => {
                         expect(body.message).toEqual(USER.NOT_FOUND);
                     });
             });
-
-            it('[/v1/user/:uuid GET] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
+            it('[/:uuid GET] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
                 return request(apiUserMicroservice.getHttpServer())
                     .get('/v1/user/42')
                     .expect(400)
@@ -119,8 +117,7 @@ describe('[Api User] Query Controller', () => {
                         );
                     });
             });
-
-            it('[/v1/user/:uuid GET] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
+            it('[/:uuid GET] - not valid uuid [expect: uuid must be a valid UUID]', async () => {
                 return request(apiUserMicroservice.getHttpServer())
                     .get('/v1/user/not-valid-u-i-d')
                     .expect(400)
@@ -132,8 +129,8 @@ describe('[Api User] Query Controller', () => {
             });
         });
 
-        describe('[EMAIL]', () => {
-            it('[/v1/user/email POST] - correct email [expect: user]', async () => {
+        describe('[v1/user/email EMAIL]', () => {
+            it('[/ POST] - correct email [expect: user]', async () => {
                 const user = createdUsers.find((u) => u.role === Role.USER);
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -149,8 +146,7 @@ describe('[Api User] Query Controller', () => {
                         );
                     });
             });
-
-            it('[/v1/user/email POST] - wrong email [expect: User not found]', async () => {
+            it('[/ POST] - wrong email [expect: User not found]', async () => {
                 return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/email')
                     .send(<UserFindByEmail.Request>{
@@ -161,8 +157,7 @@ describe('[Api User] Query Controller', () => {
                         expect(body.message).toEqual(USER.NOT_FOUND);
                     });
             });
-
-            it('[/v1/user/email POST] - not valid email [expect: email must be an email]', async () => {
+            it('[/ POST] - not valid email [expect: email must be an email]', async () => {
                 return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/email')
                     .send(<UserFindByEmail.Request>{
@@ -175,8 +170,7 @@ describe('[Api User] Query Controller', () => {
                         );
                     });
             });
-
-            it('[/v1/user/email POST] - not valid email [expect: email must be an email]', async () => {
+            it('[/ POST] - not valid email [expect: email must be an email]', async () => {
                 return (
                     request(apiUserMicroservice.getHttpServer())
                         .post('/v1/user/email')
@@ -195,8 +189,8 @@ describe('[Api User] Query Controller', () => {
             });
         });
 
-        describe('[FILTERED]', () => {
-            it('[/v1/user/find POST] find last created user [expect: user]', async () => {
+        describe('[v1/user/find FILTERED]', () => {
+            it('[/ POST] find last created user [expect: user]', async () => {
                 const user = createdUsers.find((u) => u.role === Role.USER);
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -215,8 +209,7 @@ describe('[Api User] Query Controller', () => {
                         );
                     });
             });
-
-            it('[/v1/user/find POST] find by email [expect: user]', async () => {
+            it('[/ POST] find by email [expect: user]', async () => {
                 const user = createdUsers.find((u) => u.role === Role.USER);
                 if (!user) throw new Error(SOMETHING_WENT_WRONG);
 
@@ -232,8 +225,7 @@ describe('[Api User] Query Controller', () => {
                         );
                     });
             });
-
-            it('[/v1/user/find POST] find by wrong email [User not found]', async () => {
+            it('[/ POST] find by wrong email [User not found]', async () => {
                 return request(apiUserMicroservice.getHttpServer())
                     .post('/v1/user/find')
                     .send(<UserFindFiltered.Request>{
@@ -244,8 +236,7 @@ describe('[Api User] Query Controller', () => {
                         expect(body.message).toEqual(USER.NOT_FOUND);
                     });
             });
-
-            it('[/v1/user/find POST] All params wrong [expect: 4 exception]', async () => {
+            it('[/ POST] All params wrong [expect: 4 exception]', async () => {
                 return (
                     request(apiUserMicroservice.getHttpServer())
                         .post('/v1/user/find')
