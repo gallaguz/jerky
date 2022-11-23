@@ -1,5 +1,6 @@
 import {
     Category,
+    Ingredient,
     PrismaClient,
     Raw,
     Recipe,
@@ -10,10 +11,28 @@ import { faker } from '@faker-js/faker';
 
 const prismaClient = new PrismaClient();
 
+export interface IUuid {
+    uuid: string;
+}
+
+export interface IIngredientConnect {
+    connect: IUuid;
+}
+
+export interface IIngredientQty {
+    uuid: string;
+    qtyPerKg: number;
+    ingredient: IIngredientConnect;
+}
+
 export interface IRecipe {
     uuid: string;
     title: string;
     description: string;
+    recipeTypeUuid: string;
+    categoryUuid: string;
+    rawUuid: string;
+    ingredientsQty: IIngredientQty[];
 }
 
 // const recipes = [
@@ -54,27 +73,30 @@ export interface IRecipe {
 //     },
 // ];
 
-export const pickRandomInRange = (min: number, max: number): number =>
+export const pickRandomNumberInRange = (min: number, max: number): number =>
     Math.floor(Math.random() * (max - min + 1)) + min;
-export const pickRandomNumber = Math.floor(Math.random());
+export const pickRandomNumber = (): number => Math.floor(Math.random());
 export const pickRandomObj = <T>(items: T[], count = 1): T[] => {
     const arr = [];
 
     for (let i = 0; i < count; i++) {
-        arr.push(items[pickRandomNumber * items.length]);
+        arr.push(items[pickRandomNumber() * items.length]);
     }
 
     return arr;
 };
 
-const saveRecipe = async (
-    { uuid, description, title }: IRecipe,
-    recipeTypeUuid: string,
-    categoryUuid: string,
-    rawUuid: string,
-): Promise<Recipe> => {
-    try {
-        return await prismaClient.recipe.create({
+const saveRecipe = async ({
+    uuid,
+    description,
+    title,
+    recipeTypeUuid,
+    categoryUuid,
+    rawUuid,
+    ingredientsQty,
+}: IRecipe): Promise<Recipe> => {
+    return await prismaClient.recipe
+        .create({
             data: {
                 uuid,
                 title,
@@ -82,39 +104,60 @@ const saveRecipe = async (
                 recipeTypeUuid,
                 categoryUuid,
                 rawUuid,
+                ingredientQty: {
+                    create: <IIngredientQty[]>ingredientsQty,
+                },
             },
+        })
+        .catch((e) => {
+            console.log(e);
+            throw e;
         });
-    } catch (e) {
-        console.log(e);
-        throw e;
-    }
 };
 
 const main = async (
     recipeTypes: RecipeType[],
     categories: Category[],
     raws: Raw[],
+    ingredients: Ingredient[],
 ): Promise<Recipe[]> => {
     const createdRecipes: Recipe[] = [];
-    for (let i = 0; i < 100; i++) {
-        const recipeType =
-            recipeTypes[pickRandomInRange(0, recipeTypes.length - 1)];
-        const category =
-            categories[pickRandomInRange(0, categories.length - 1)];
-        const raw = raws[pickRandomInRange(0, raws.length - 1)];
 
-        createdRecipes.push(
-            await saveRecipe(
-                {
-                    uuid: crypto.randomUUID(),
-                    title: `${raw.title} ${recipeType.title} ${category.title}`,
-                    description: faker.commerce.productDescription(),
+    for (let i = 0; i < pickRandomNumber(); i++) {
+        const recipeType =
+            recipeTypes[pickRandomNumberInRange(0, recipeTypes.length - 1)];
+        const category =
+            categories[pickRandomNumberInRange(0, categories.length - 1)];
+        const raw = raws[pickRandomNumberInRange(0, raws.length - 1)];
+
+        const ingredientsUuids = pickRandomObj(
+            ingredients,
+            pickRandomNumberInRange(3, 10),
+        ).map((ingredient) => ({
+            uuid: ingredient.uuid,
+        }));
+
+        const ingredientsQty = ingredientsUuids.map((el) => {
+            return {
+                uuid: crypto.randomUUID(),
+                qtyPerKg: Math.floor(Math.random() * 100),
+                ingredient: {
+                    connect: { uuid: el.uuid },
                 },
-                recipeType.uuid,
-                category.uuid,
-                raw.uuid,
-            ),
-        );
+            };
+        });
+
+        const recipe = {
+            uuid: crypto.randomUUID(),
+            title: `${raw.title} ${recipeType.title} ${category.title}`,
+            description: faker.commerce.productDescription(),
+            recipeTypeUuid: recipeType.uuid,
+            categoryUuid: category.uuid,
+            rawUuid: raw.uuid,
+            ingredientsQty,
+        };
+
+        createdRecipes.push(await saveRecipe(recipe));
     }
     return createdRecipes;
 };
@@ -123,8 +166,9 @@ export const seedRecipes = async (
     recipeTypes: RecipeType[],
     categories: Category[],
     raws: Raw[],
+    ingredients: Ingredient[],
 ): Promise<Recipe[]> => {
-    return await main(recipeTypes, categories, raws)
+    return await main(recipeTypes, categories, raws, ingredients)
         .then(async (res) => {
             await prismaClient.$disconnect();
             // console.log(res);

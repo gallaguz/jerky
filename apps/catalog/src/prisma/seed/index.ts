@@ -3,7 +3,6 @@ import { seedRaws } from './raw.seed';
 import { seedRecipeTypes } from './recipe.type.seed';
 import { seedRecipes } from './recipe.seed';
 import { seedIngredients } from './ingredient.seed';
-import { seedIngredientQtys } from './ingredient.qty.seed';
 import { seedProducts } from './product.seed';
 
 const start = performance.now();
@@ -12,9 +11,13 @@ const seed = async (): Promise<void> => {
     const categories = await seedCategories();
     const raws = await seedRaws(categories);
     const recipeTypes = await seedRecipeTypes();
-    const recipes = await seedRecipes(recipeTypes, categories, raws);
     const ingredients = await seedIngredients();
-    const ingredientsQtys = await seedIngredientQtys(recipes, ingredients);
+    const recipes = await seedRecipes(
+        recipeTypes,
+        categories,
+        raws,
+        ingredients,
+    );
     const products = await seedProducts(recipes, recipeTypes, categories, raws);
 };
 

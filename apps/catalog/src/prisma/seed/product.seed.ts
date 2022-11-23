@@ -8,15 +8,35 @@ import {
     RecipeType,
 } from '@prisma/client/scripts/catalog-client';
 import * as crypto from 'crypto';
-import { pickRandomObj } from './recipe.seed';
+import { IUuid, pickRandomObj } from './recipe.seed';
 
 const prismaClient = new PrismaClient();
+
+export interface ICategoryConnect {
+    connect: IUuid;
+}
+
+export interface IRawConnect {
+    connect: IUuid;
+}
+
+export interface IRecipeConnect {
+    connect: IUuid;
+}
+
+export interface IRecipeTypeConnect {
+    connect: IUuid;
+}
 
 export interface IProduct {
     uuid: string;
     title: string;
     description: string;
     price: number;
+    category: ICategoryConnect;
+    raw: IRawConnect;
+    recipe: IRecipeConnect;
+    recipeType: IRecipeTypeConnect;
 }
 
 const saveProduct = async (

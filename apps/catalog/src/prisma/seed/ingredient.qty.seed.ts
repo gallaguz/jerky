@@ -5,8 +5,7 @@ import {
     Recipe,
 } from '@prisma/client/scripts/catalog-client';
 import * as crypto from 'crypto';
-import { faker } from '@faker-js/faker';
-import { pickRandomInRange, pickRandomObj } from './recipe.seed';
+import { pickRandomNumberInRange, pickRandomObj } from './recipe.seed';
 
 const prismaClient = new PrismaClient();
 
@@ -46,7 +45,11 @@ const main = async (
     const createdIngredientQtys: IngredientQty[] = [];
 
     for (const recipe of recipes) {
-        const ingredientUuidsCount = pickRandomInRange(1, ingredients.length);
+        const ingredientUuidsCount = pickRandomNumberInRange(
+            1,
+            ingredients.length,
+        );
+
         for (let i = 0; i < ingredientUuidsCount; i++) {
             const ingredientUuid = pickRandomObj(ingredients).map(
                 (ingredient) => ({
