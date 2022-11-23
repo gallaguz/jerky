@@ -29,8 +29,8 @@ export abstract class UserBase {
         return this._passwordHash;
     }
 
-    public generateUUID(): void {
-        this._uuid = uuid();
+    public generateUUID(): string {
+        return uuid();
     }
 
     // protected excludePrivateProperties<User, Key extends keyof User>(

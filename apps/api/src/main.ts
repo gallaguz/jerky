@@ -6,7 +6,7 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(ApiModule);
-    const globalPrefix = 'api';
+    const globalPrefix = 'api/v1';
     app.setGlobalPrefix(globalPrefix);
     app.use(cookieParser());
     const port = process.env.PORT || 3333;

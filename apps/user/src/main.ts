@@ -7,7 +7,7 @@ async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AppModule);
     await app.init();
 
-    Logger.log(`[USER] Microservice successfully started!`);
+    Logger.verbose(`[USER] Microservice successfully started!`);
 }
 
 void bootstrap();

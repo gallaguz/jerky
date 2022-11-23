@@ -5,18 +5,22 @@ import { RMQModule } from 'nestjs-rmq';
 import { ApiUserCommandsController } from './api.user.commands.controller';
 import { NestApplication } from '@nestjs/core';
 import { faker } from '@faker-js/faker';
-import { UserCreate, UserDelete, UserUpdatePassword } from '@jerky/contracts';
-import { IUser, Role } from '@jerky/interfaces';
+import {
+    UserCreate,
+    UserRemoveEvent,
+    UserUpdatePassword,
+} from '@jerky/contracts';
+import { IUser } from '@jerky/interfaces';
 import { delay } from 'rxjs';
 import * as request from 'supertest';
-import {
-    EMAIL,
-    PASSWORD,
-    SOMETHING_WENT_WRONG,
-    USER,
-    UUID,
-} from '@jerky/constants';
+import { ERROR_MESSAGES } from '@jerky/constants';
 import { ApiUserModule } from '../api.user.module';
+import { Role } from '@jerky/enums';
+import PASSWORD = ERROR_MESSAGES.PASSWORD;
+import SOMETHING_WENT_WRONG = ERROR_MESSAGES.SOMETHING_WENT_WRONG;
+import EMAIL = ERROR_MESSAGES.EMAIL;
+import USER = ERROR_MESSAGES.USER;
+import UUID = ERROR_MESSAGES.UUID;
 
 describe('API USER Commands Controller', () => {
     const createdUsers: IUser[] = [];
@@ -45,7 +49,7 @@ describe('API USER Commands Controller', () => {
     afterAll(async () => {
         try {
             createdUsers.forEach((user) => {
-                userCommandsController.delete(<UserDelete.Request>{
+                userCommandsController.delete(<UserRemoveEvent.Request>{
                     uuid: user.uuid,
                 });
             });

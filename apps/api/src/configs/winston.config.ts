@@ -1,9 +1,7 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as winston from 'winston';
 import { utilities as nestWinstonModuleUtilities } from 'nest-winston/dist/winston.utilities';
-import { ApiAuthModule } from '../app/api.auth/api.auth.module';
 import { WinstonModuleAsyncOptions, WinstonModuleOptions } from 'nest-winston';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { combine, timestamp, printf, colorize, align, json } = winston.format;
 
 const logLevels = {
@@ -13,63 +11,78 @@ const logLevels = {
     debug: 3,
     verbose: 4,
 };
+const errorFilter = winston.format((info, opts) => {
+    return info.level === 'error' ? info : false;
+});
 
-export const WinstonConfig = (): WinstonModuleAsyncOptions => ({
+const warnFilter = winston.format((info, opts) => {
+    return info.level === 'warn' ? info : false;
+});
+
+const infoFilter = winston.format((info, opts) => {
+    return info.level === 'info' ? info : false;
+});
+
+const debugFilter = winston.format((info, opts) => {
+    return info.level === 'debug' ? info : false;
+});
+
+const verboseFilter = winston.format((info, opts) => {
+    return info.level === 'verbose' ? info : false;
+});
+
+export const WinstonConfig = (
+    serviceName: string,
+): WinstonModuleAsyncOptions => ({
     imports: [ConfigModule],
     inject: [ConfigService],
     useFactory: (configService: ConfigService): WinstonModuleOptions => ({
         defaultMeta: {
-            service: ApiAuthModule.name,
+            service: serviceName,
         },
         levels: logLevels,
-        level: configService.get('LOG_LEVEL') || 'info',
+        level: configService.get('LOG_LEVEL') || 'error',
         format: combine(timestamp(), json()),
         transports: [
             new winston.transports.File({
                 filename: `${process.cwd()}/${configService.get(
                     'LOG_PATH',
-                )}combined.log`,
+                )}${serviceName}-combined.log`,
             }),
             new winston.transports.File({
                 level: 'error',
                 filename: `${process.cwd()}/${configService.get(
                     'LOG_PATH',
-                )}error.log`,
+                )}${serviceName}-error.log`,
+                format: combine(errorFilter(), timestamp(), json()),
             }),
             new winston.transports.File({
                 level: 'warn',
                 filename: `${process.cwd()}/${configService.get(
                     'LOG_PATH',
-                )}warn.log`,
+                )}${serviceName}-warn.log`,
+                format: combine(warnFilter(), timestamp(), json()),
             }),
             new winston.transports.File({
-                // format: combine(
-                //     colorize({ all: true }),
-                //     timestamp({
-                //         format: 'YYYY-MM-DD hh:mm:ss.SSS A',
-                //     }),
-                //     align(),
-                //     printf(
-                //         (info) =>
-                //             `[${info.timestamp}] ${info.level}: ${info.message}`,
-                //     ),
-                // ),
                 level: 'info',
                 filename: `${process.cwd()}/${configService.get(
                     'LOG_PATH',
-                )}info.log`,
+                )}${serviceName}-info.log`,
+                format: combine(infoFilter(), timestamp(), json()),
             }),
             new winston.transports.File({
                 level: 'debug',
                 filename: `${process.cwd()}/${configService.get(
                     'LOG_PATH',
-                )}debug.log`,
+                )}${serviceName}-debug.log`,
+                format: combine(debugFilter(), timestamp(), json()),
             }),
             new winston.transports.File({
                 level: 'verbose',
                 filename: `${process.cwd()}/${configService.get(
                     'LOG_PATH',
-                )}verbose.log`,
+                )}${serviceName}-verbose.log`,
+                format: combine(verboseFilter(), timestamp(), json()),
             }),
             new winston.transports.Console({
                 format: winston.format.combine(

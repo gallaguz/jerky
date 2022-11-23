@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtStrategy } from '../system/strategies/jwt.strategy';
+import { JwtStrategy } from '../core/strategies/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
 import { ApiAuthCommandController } from './commands/api.auth.command.controller';

@@ -1,10 +1,15 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { DbService } from '../db/db.service';
+import { Injectable, Logger } from '@nestjs/common';
+import { DatabaseService } from '../database/database.service';
 import { RefreshToken } from '@prisma/client/scripts/auth-client';
 
 @Injectable()
 export class TokenRepository {
-    constructor(private readonly prismaService: DbService) {}
+    constructor(
+        private readonly databaseService: DatabaseService,
+        private readonly logger: Logger,
+    ) {
+        this.logger.debug(`${TokenRepository.name} init`);
+    }
 
     public async save({
         userUuid,
@@ -21,20 +26,21 @@ export class TokenRepository {
             exp,
         };
 
-        const savedRefreshToken = await this.prismaService.refreshToken.create({
-            data,
-        });
+        const savedRefreshToken =
+            await this.databaseService.refreshToken.create({
+                data,
+            });
         return savedRefreshToken.token;
     }
 
     public async find(refreshToken: string): Promise<RefreshToken | null> {
-        return this.prismaService.refreshToken.findFirst({
+        return this.databaseService.refreshToken.findFirst({
             where: { token: refreshToken, isActive: true },
         });
     }
 
     public async delete(refreshToken: string): Promise<RefreshToken | null> {
-        return this.prismaService.refreshToken.update({
+        return this.databaseService.refreshToken.update({
             where: { token: refreshToken },
             data: { isActive: false },
         });

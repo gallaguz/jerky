@@ -1,10 +1,10 @@
 import { ITokenDecoded, ITokenPayload } from '@jerky/interfaces';
 import { delay } from 'rxjs';
 import {
-    ApiRegister,
-    ApiLogin,
-    ApiRefresh,
-    UserDelete,
+    HttpRegister,
+    HttpLogin,
+    HttpRefresh,
+    UserRemoveEvent,
 } from '@jerky/contracts';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
@@ -16,9 +16,15 @@ import cookieParser = require('cookie-parser');
 import { faker } from '@faker-js/faker';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ENVConfig, JWTConfig, RMQConfig } from '../../../configs';
-import { EMAIL, JWT, PASSWORD, USER } from '@jerky/constants';
 import { Role } from '@prisma/client/scripts/user-client';
 import { UUUIDService } from '../../common/uuid.service';
+import { WinstonModule } from 'nest-winston';
+import { WinstonConfig } from '../../../configs/winston.config';
+import { ERROR_MESSAGES } from '@jerky/constants';
+import PASSWORD = ERROR_MESSAGES.PASSWORD;
+import JWT = ERROR_MESSAGES.JWT;
+import EMAIL = ERROR_MESSAGES.EMAIL;
+import USER = ERROR_MESSAGES.USER;
 
 class FakeUserGodLikeEntity {
     private _api: INestApplication;
@@ -68,14 +74,14 @@ class FakeUserGodLikeEntity {
     public async register(): Promise<this> {
         const { body, headers } = await request(this._api.getHttpServer())
             .post('/v1/auth/register')
-            .send(<ApiRegister.Request>{
+            .send(<HttpRegister.Request>{
                 email: this._credentials.email,
                 password: this._credentials.password,
             })
             .expect(201)
             .then((res: request.Response) => res);
 
-        const { accessToken } = <ApiRegister.Response>body;
+        const { accessToken } = <HttpRegister.Response>body;
 
         this._tokens.accessToken = accessToken;
         this._cookies = headers['set-cookie'];
@@ -86,13 +92,13 @@ class FakeUserGodLikeEntity {
 
     public async deleteCreatedUser(
         uuid?: string,
-    ): Promise<UserDelete.Response> {
+    ): Promise<UserRemoveEvent.Response> {
         const userUuidToDelete = uuid ?? this._uuid;
         return await request(this._api.getHttpServer())
             .delete(`/v1/user/${userUuidToDelete}`)
             .expect(200)
             .then(({ body }: request.Response) => {
-                expect(<UserDelete.Response>body.uuid).toEqual(
+                expect(<UserRemoveEvent.Response>body.uuid).toEqual(
                     userUuidToDelete,
                 );
                 return body;
@@ -245,6 +251,7 @@ describe('[API AUTH Commands Controller]', () => {
                 RMQModule.forRootAsync(RMQConfig()),
                 JwtModule.registerAsync(JWTConfig()),
                 ApiAuthModule,
+                WinstonModule.forRootAsync(WinstonConfig('API')),
             ],
         }).compile();
 
@@ -283,7 +290,7 @@ describe('[API AUTH Commands Controller]', () => {
 
             const body = await request(apiAuth.getHttpServer())
                 .post('/v1/auth/register')
-                .send(<ApiRegister.Request>{
+                .send(<HttpRegister.Request>{
                     email: newFakeUser.email,
                     password: newFakeUser.password,
                 })
@@ -292,7 +299,7 @@ describe('[API AUTH Commands Controller]', () => {
                     return body;
                 });
 
-            const { accessToken } = <ApiRegister.Response>body;
+            const { accessToken } = <HttpRegister.Response>body;
             expect(accessToken).toBeDefined();
             newFakeUser.setAccessToken(accessToken);
             await newFakeUser.setUuid();
@@ -302,7 +309,7 @@ describe('[API AUTH Commands Controller]', () => {
         it('[/ POST] not valid email (string) [failed]', async () => {
             const body = await request(apiAuth.getHttpServer())
                 .post('/v1/auth/register')
-                .send(<ApiRegister.Request>{
+                .send(<HttpRegister.Request>{
                     email: 'not.valid.email',
                     password: faker.internet.password(),
                 })
@@ -437,14 +444,14 @@ describe('[API AUTH Commands Controller]', () => {
         it('[/ POST] correct credentials [success]', async () => {
             const { body, headers } = await request(apiAuth.getHttpServer())
                 .post('/v1/auth/login')
-                .send(<ApiLogin.Request>{
+                .send(<HttpLogin.Request>{
                     email: fakeUserFotTestLogin.email,
                     password: fakeUserFotTestLogin.password,
                 })
                 .expect(200)
                 .then((res: request.Response) => res);
 
-            const { accessToken } = <ApiLogin.Response>body;
+            const { accessToken } = <HttpLogin.Response>body;
             expect(accessToken).toBeDefined();
             expect(headers['set-cookie']).toBeDefined();
 
@@ -454,7 +461,7 @@ describe('[API AUTH Commands Controller]', () => {
         it('[/ POST] wrong email (string) [failed]', async () => {
             const body = await request(apiAuth.getHttpServer())
                 .post('/v1/auth/login')
-                .send(<ApiLogin.Request>{
+                .send(<HttpLogin.Request>{
                     email: 'wrong@email.com',
                     password: fakeUserFotTestLogin.password,
                 })
@@ -466,7 +473,7 @@ describe('[API AUTH Commands Controller]', () => {
         it('[/ POST] wrong password (string) [failed]', async () => {
             const body = await request(apiAuth.getHttpServer())
                 .post('/v1/auth/login')
-                .send(<ApiLogin.Request>{
+                .send(<HttpLogin.Request>{
                     email: fakeUserFotTestLogin.email,
                     password: makePassword(8, 'a'),
                 })
@@ -478,7 +485,7 @@ describe('[API AUTH Commands Controller]', () => {
         it('[/ POST] wrong email / password (string, string) [failed]', async () => {
             const body = await request(apiAuth.getHttpServer())
                 .post('/v1/auth/login')
-                .send(<ApiLogin.Request>{
+                .send(<HttpLogin.Request>{
                     email: 'wrong@email.com',
                     password: makePassword(8, 'a'),
                 })
@@ -613,7 +620,7 @@ describe('[API AUTH Commands Controller]', () => {
                 .expect(200)
                 .then((res: request.Response) => res);
 
-            expect(<ApiRefresh.Response>body.accessToken).toBeDefined();
+            expect(<HttpRefresh.Response>body.accessToken).toBeDefined();
 
             fakeUserFotTestRefresh
                 .validateAccessToken(body.accessToken)

@@ -1,5 +1,6 @@
-import { IUser, Role } from '@jerky/interfaces';
+import { IUser } from '@jerky/interfaces';
 import { User } from '@prisma/client/scripts/user-client';
+import { Role } from '@jerky/enums';
 
 export class UserModel implements IUser {
     createdAt: Date;

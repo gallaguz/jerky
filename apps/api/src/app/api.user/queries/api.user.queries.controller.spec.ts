@@ -1,7 +1,7 @@
 import { NestApplication } from '@nestjs/core';
 import { RMQModule } from 'nestjs-rmq';
 import {
-    UserDelete,
+    UserRemoveEvent,
     UserFindByEmail,
     UserFindByUuid,
     UserFindFiltered,
@@ -13,17 +13,17 @@ import { ENVConfig, RMQConfig } from '../../../configs';
 import { faker } from '@faker-js/faker';
 import { ApiUserCommandsController } from '../commands/api.user.commands.controller';
 import * as request from 'supertest';
-import { IUser, OrderBy, Role } from '@jerky/interfaces';
-import {
-    ORDER_BY,
-    SEARCH_STRING,
-    SKIP,
-    SOMETHING_WENT_WRONG,
-    TAKE,
-    USER,
-} from '@jerky/constants';
+import { IUser } from '@jerky/interfaces';
 import { delay } from 'rxjs';
 import { ApiUserModule } from '../api.user.module';
+import { OrderBy, Role } from '@jerky/enums';
+import { ERROR_MESSAGES } from '@jerky/constants';
+import ORDER_BY = ERROR_MESSAGES.ORDER_BY;
+import TAKE = ERROR_MESSAGES.TAKE;
+import SEARCH_STRING = ERROR_MESSAGES.SEARCH_STRING;
+import SOMETHING_WENT_WRONG = ERROR_MESSAGES.SOMETHING_WENT_WRONG;
+import SKIP = ERROR_MESSAGES.SKIP;
+import USER = ERROR_MESSAGES.USER;
 
 const createdUsers: IUser[] = [];
 
@@ -61,7 +61,7 @@ describe('[Api User] Query Controller', () => {
     afterAll(async () => {
         try {
             createdUsers.forEach((user) => {
-                userCommandsController.delete(<UserDelete.Request>{
+                userCommandsController.delete(<UserRemoveEvent.Request>{
                     uuid: user.uuid,
                 });
             });

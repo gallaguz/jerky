@@ -1,23 +1,11 @@
-export interface IDomainEvent {
-    topic: string;
-    data: unknown;
-}
+import { Role } from '@jerky/enums';
+import { IDomainEvent } from '../domain';
 
 export interface IUserEntity {
     email: string;
     passwordHash?: string;
     role?: TRole;
     events: IDomainEvent[];
-}
-
-export enum OrderBy {
-    ASC = 'asc',
-    DESC = 'desc',
-}
-
-export interface ICredentials {
-    email: string;
-    password: string;
 }
 
 export interface IUser {
@@ -28,13 +16,6 @@ export interface IUser {
     email: string;
     passwordHash: string;
     role: Role;
-}
-
-export enum Role {
-    MODERATOR = 'MODERATOR',
-    USER = 'USER',
-    CUSTOMER = 'CUSTOMER',
-    ADMIN = 'ADMIN',
 }
 
 export type TRole = typeof Role[keyof typeof Role];

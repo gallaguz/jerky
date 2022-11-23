@@ -9,22 +9,12 @@ import {
     ValidationPipe,
 } from '@nestjs/common';
 
-import { RMQService } from 'nestjs-rmq';
 import { ApiUserCommandsService } from './api.user.commands.service';
-import {
-    UserCreate,
-    UserDelete,
-    UserUpdateEmail,
-    UserUpdatePassword,
-    UserUpdateRole,
-} from '@jerky/contracts';
+import { UserCreate, UserRemove, UserUpdate } from '@jerky/contracts';
 
-@Controller('v1/user')
+@Controller('user')
 export class ApiUserCommandsController {
-    constructor(
-        private readonly rmqService: RMQService,
-        private readonly userCommandsService: ApiUserCommandsService,
-    ) {}
+    constructor(private readonly userCommandsService: ApiUserCommandsService) {}
 
     @UsePipes(new ValidationPipe())
     @Post()
@@ -40,36 +30,17 @@ export class ApiUserCommandsController {
 
     @UsePipes(new ValidationPipe())
     @Delete(':uuid')
-    public async delete(
-        @Param() { uuid }: UserDelete.Request,
-    ): Promise<UserDelete.Response> {
-        return await this.userCommandsService.delete(uuid);
+    public async remove(
+        @Param() { uuid }: UserRemove.Request,
+    ): Promise<UserRemove.Response> {
+        return await this.userCommandsService.remove(uuid);
     }
 
     @UsePipes(new ValidationPipe())
-    @Patch('password')
-    public async updatePasswordHash(
-        @Body() { uuid, password }: UserUpdatePassword.Request,
-    ): Promise<UserUpdatePassword.Response> {
-        return this.userCommandsService.updatePassword({
-            uuid,
-            password,
-        });
-    }
-
-    @UsePipes(new ValidationPipe())
-    @Patch('email')
-    public async updatePasswordEmail(
-        @Body() { uuid, email }: UserUpdateEmail.Request,
-    ): Promise<UserUpdateEmail.Response> {
-        return this.userCommandsService.updateEmail({ uuid, email });
-    }
-
-    @UsePipes(new ValidationPipe())
-    @Patch('role')
-    public async updatePasswordRole(
-        @Body() { uuid, role }: UserUpdateRole.Request,
-    ): Promise<UserUpdateRole.Response> {
-        return this.userCommandsService.updateRole({ uuid, role });
+    @Patch()
+    public async update(
+        @Body() dto: UserUpdate.Request,
+    ): Promise<UserUpdate.Response> {
+        return this.userCommandsService.update(dto);
     }
 }

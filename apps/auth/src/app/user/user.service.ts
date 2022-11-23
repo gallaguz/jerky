@@ -7,14 +7,14 @@ import {
     UserValidate,
 } from '@jerky/contracts';
 import { RMQService } from 'nestjs-rmq';
-import { UUUIDService } from '../common/uuid.service';
+import { UUIDService } from '../common/uuid.service';
 
 @Injectable()
 export class UserService {
     constructor(
         private readonly rmqService: RMQService,
         private readonly logger: Logger,
-        private readonly uuidService: UUUIDService,
+        private readonly uuidService: UUIDService,
     ) {
         this.logger = new Logger(UserService.name);
     }

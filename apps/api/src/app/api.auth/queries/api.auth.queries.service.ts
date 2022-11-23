@@ -2,8 +2,9 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { RMQService } from 'nestjs-rmq';
 import { ApiUserQueriesService } from '../../api.user/queries/api.user.queries.service';
 import { IUser } from '@jerky/interfaces';
-import { USER } from '@jerky/constants';
 import { UUUIDService } from '../../common/uuid.service';
+import { ERROR_MESSAGES } from '@jerky/constants';
+import USER = ERROR_MESSAGES.USER;
 
 @Injectable()
 export class ApiAuthQueriesService {

@@ -15,15 +15,35 @@
         "importHelpers": true,
         "target": "es2015",
         "module": "esnext",
-        "lib": ["es2017", "dom"],
+        "lib": [
+            "es2017",
+            "dom"
+        ],
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "baseUrl": ".",
         "paths": {
-            "@jerky/constants": ["libs/constants/src/index.ts"],
-            "@jerky/contracts": ["libs/contracts/src/index.ts"],
-            "@jerky/interfaces": ["libs/interfaces/src/index.ts"]
+            "@jerky/constants": [
+                "libs/constants/src/index.ts"
+            ],
+            "@jerky/contracts": [
+                "libs/contracts/src/index.ts"
+            ],
+            "@jerky/enums": [
+                "libs/enums/src/index.ts"
+            ],
+            "@jerky/interfaces": [
+                "libs/interfaces/src/index.ts"
+            ]
         }
     },
-    "exclude": ["node_modules", "tmp"]
+    "ts-node": {
+        "compilerOptions": {
+            "module": "CommonJS"
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "tmp"
+    ]
 }

@@ -4,7 +4,7 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
-import { DbService } from '../db/db.service';
+import { DatabaseService } from '../database/database.service';
 import {
     AuthLogin,
     AuthLogout,
@@ -12,14 +12,15 @@ import {
     AuthRegister,
 } from '@jerky/contracts';
 import { RMQService } from 'nestjs-rmq';
-import { USER } from '@jerky/constants';
 import { TokenService } from '../token/token.service';
 import { UserService } from '../user/user.service';
+import { ERROR_MESSAGES } from '@jerky/constants';
+import USER = ERROR_MESSAGES.USER;
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly prismaService: DbService,
+        private readonly prismaService: DatabaseService,
         private readonly rmqService: RMQService,
         private readonly tokenService: TokenService,
         private readonly userService: UserService,

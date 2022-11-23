@@ -1,14 +1,14 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
     UserCreate,
-    UserDelete,
-    UserUpdateEmail,
-    UserUpdatePassword,
-    UserUpdateRole,
+    UserRemove,
+    UserRemoveEvent,
+    UserUpdate,
 } from '@jerky/contracts';
 import { RMQService } from 'nestjs-rmq';
-import { SOMETHING_WENT_WRONG } from '@jerky/constants';
 import { UUUIDService } from '../../common/uuid.service';
+import { ERROR_MESSAGES } from '@jerky/constants';
+import SOMETHING_WENT_WRONG = ERROR_MESSAGES.SOMETHING_WENT_WRONG;
 
 @Injectable()
 export class ApiUserCommandsService {
@@ -35,13 +35,13 @@ export class ApiUserCommandsService {
         throw new BadRequestException(SOMETHING_WENT_WRONG);
     }
 
-    public async delete(uuid: string): Promise<UserDelete.Response> {
+    public async remove(uuid: string): Promise<UserRemove.Response> {
         try {
             return await this.rmqService.send<
-                UserDelete.Request,
-                UserDelete.Response
+                UserRemove.Request,
+                UserRemove.Response
             >(
-                UserDelete.topic,
+                UserRemoveEvent.topic,
                 { uuid },
                 {
                     headers: {
@@ -57,73 +57,18 @@ export class ApiUserCommandsService {
         throw new BadRequestException(SOMETHING_WENT_WRONG);
     }
 
-    public async updatePassword({
-        uuid,
-        password,
-    }: UserUpdatePassword.Request): Promise<UserUpdatePassword.Response> {
+    public async update(
+        props: UserUpdate.Request,
+    ): Promise<UserUpdate.Response> {
         try {
             return await this.rmqService.send<
-                UserUpdatePassword.Request,
-                UserUpdatePassword.Response
-            >(
-                UserUpdatePassword.topic,
-                { uuid, password },
-                {
-                    headers: {
-                        requestId: this.uuidService.getUuid(),
-                    },
+                UserUpdate.Request,
+                UserUpdate.Response
+            >(UserUpdate.topic, props, {
+                headers: {
+                    requestId: this.uuidService.getUuid(),
                 },
-            );
-        } catch (e) {
-            if (e instanceof Error) {
-                throw new BadRequestException(e.message);
-            }
-        }
-        throw new BadRequestException(SOMETHING_WENT_WRONG);
-    }
-
-    public async updateEmail({
-        uuid,
-        email,
-    }: UserUpdateEmail.Request): Promise<UserUpdateEmail.Response> {
-        try {
-            return await this.rmqService.send<
-                UserUpdateEmail.Request,
-                UserUpdateEmail.Response
-            >(
-                UserUpdateEmail.topic,
-                { uuid, email },
-                {
-                    headers: {
-                        requestId: this.uuidService.getUuid(),
-                    },
-                },
-            );
-        } catch (e) {
-            if (e instanceof Error) {
-                throw new BadRequestException(e.message);
-            }
-        }
-        throw new BadRequestException(SOMETHING_WENT_WRONG);
-    }
-
-    public async updateRole({
-        uuid,
-        role,
-    }: UserUpdateRole.Request): Promise<UserUpdateRole.Response> {
-        try {
-            return await this.rmqService.send<
-                UserUpdateRole.Request,
-                UserUpdateRole.Response
-            >(
-                UserUpdateRole.topic,
-                { uuid, role },
-                {
-                    headers: {
-                        requestId: this.uuidService.getUuid(),
-                    },
-                },
-            );
+            });
         } catch (e) {
             if (e instanceof Error) {
                 throw new BadRequestException(e.message);

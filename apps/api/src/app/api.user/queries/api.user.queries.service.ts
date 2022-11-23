@@ -100,7 +100,7 @@ export class ApiUserQueriesService {
         }
     }
 
-    public async findManyFiltered({
+    public async findFiltered({
         take,
         skip,
         searchString,

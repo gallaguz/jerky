@@ -1,14 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { DbService } from '../db/db.service';
+import { DatabaseService } from '../database/database.service';
 import { UserFindFiltered } from '@jerky/contracts';
-import { Role } from '@jerky/interfaces';
 import { User } from '@prisma/client/scripts/user-client';
-import { SOMETHING_WENT_WRONG } from '@jerky/constants';
+import { ConfigService } from '@nestjs/config';
+import { ERROR_MESSAGES } from '@jerky/constants';
+import SOMETHING_WENT_WRONG = ERROR_MESSAGES.SOMETHING_WENT_WRONG;
+import { Role } from '@jerky/enums';
+import { UserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class UserRepository {
-    constructor(private readonly prismaService: DbService) {}
+    constructor(
+        private readonly prismaService: DatabaseService,
+        private readonly configService: ConfigService,
+    ) {}
 
     public async create(
         uuid: string,
@@ -67,48 +73,26 @@ export class UserRepository {
         }
     }
 
-    public async updateEmail(
-        uuid: string,
-        email: string,
-    ): Promise<User | null> {
+    public async update({
+        uuid,
+        role,
+        email,
+        passwordHash,
+    }: UserEntity): Promise<User | null> {
         try {
             return await this.prismaService.user.update({
                 where: { uuid },
-                data: { email },
+                data: { role, email, passwordHash },
             });
         } catch (e) {
             if (e instanceof Error) {
-                Logger.error(SOMETHING_WENT_WRONG);
-            }
-            return null;
-        }
-    }
+                console.log({
+                    uuid,
+                    role,
+                    email,
+                    passwordHash,
+                });
 
-    public async updatePasswordHash(
-        uuid: string,
-        passwordHash: string,
-    ): Promise<User | null> {
-        try {
-            return await this.prismaService.user.update({
-                where: { uuid },
-                data: { passwordHash },
-            });
-        } catch (e) {
-            if (e instanceof Error) {
-                Logger.error(SOMETHING_WENT_WRONG);
-            }
-            return null;
-        }
-    }
-
-    public async updateRole(uuid: string, role: Role): Promise<User | null> {
-        try {
-            return await this.prismaService.user.update({
-                where: { uuid },
-                data: { role },
-            });
-        } catch (e) {
-            if (e instanceof Error) {
                 Logger.error(SOMETHING_WENT_WRONG);
             }
             return null;
@@ -131,10 +115,13 @@ export class UserRepository {
                 where: {
                     ...or,
                 },
-                take: Number(take) || 10,
+                take:
+                    Number(take) ||
+                    Number(this.configService.get('TAKE_DEFAULT')),
                 skip: Number(skip) || undefined,
                 orderBy: {
-                    createdAt: orderBy,
+                    createdAt:
+                        orderBy || this.configService.get('ORDER_BY_DEFAULT'),
                 },
             });
         } catch (e) {

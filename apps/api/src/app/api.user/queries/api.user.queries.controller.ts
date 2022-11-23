@@ -12,14 +12,15 @@ import {
 
 import { ApiUserQueriesService } from './api.user.queries.service';
 import {
+    HttpUserFindFiltered,
     UserFindByEmail,
     UserFindByUuid,
-    UserFindFiltered,
     UserHealthCheck,
 } from '@jerky/contracts';
-import { USER } from '@jerky/constants';
+import { ERROR_MESSAGES } from '@jerky/constants';
+import USER = ERROR_MESSAGES.USER;
 
-@Controller('v1/user')
+@Controller('user')
 export class ApiUserQueriesController {
     constructor(private readonly userQueriesService: ApiUserQueriesService) {}
 
@@ -57,9 +58,9 @@ export class ApiUserQueriesController {
     @HttpCode(200)
     @Post('find')
     public async findFiltered(
-        @Body() dto: UserFindFiltered.Request,
-    ): Promise<UserFindFiltered.Response> {
-        const users = await this.userQueriesService.findManyFiltered(dto);
+        @Body() dto: HttpUserFindFiltered.Request,
+    ): Promise<HttpUserFindFiltered.Response> {
+        const users = await this.userQueriesService.findFiltered(dto);
         if (!users?.length) throw new NotFoundException(USER.NOT_FOUND);
         return users;
     }

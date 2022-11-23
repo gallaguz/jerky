@@ -5,9 +5,9 @@ import { AuthModule } from './app/auth.module';
 
 async function bootstrap(): Promise<void> {
     const app = await NestFactory.create(AuthModule);
-
     await app.init();
-    Logger.log(`[AUTH] Microservice successfully started`);
+    const logger = new Logger(bootstrap.name);
+    logger.verbose(`[AUTH] Microservice successfully started`);
 }
 
 void bootstrap();

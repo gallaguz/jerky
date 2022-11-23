@@ -11,19 +11,25 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiAuthCommandsService } from './api.auth.commands.service';
-import { ApiLogin, ApiLogout, ApiRefresh, ApiRegister } from '@jerky/contracts';
-import { JwtGuard } from '../../system/guards/jwt.guard';
-import { Cookies } from '../../system/decorators/cookies.decorator';
+
+import { JwtGuard } from '../../core/guards/jwt.guard';
+import { Cookies } from '../../core/decorators/cookies.decorator';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger } from 'winston';
+import {
+    HttpLogin,
+    HttpLogout,
+    HttpRefresh,
+    HttpRegister,
+} from '@jerky/contracts';
 
-@Controller('v1/auth')
+@Controller('auth')
 export class ApiAuthCommandController {
     constructor(
         private readonly authCommandsService: ApiAuthCommandsService,
         @Inject(WINSTON_MODULE_PROVIDER) private readonly logger: Logger, // private readonly logger: Logger,
     ) {
-        this.logger.debug('init', {
+        this.logger.verbose('verbose', {
             controller: ApiAuthCommandController.name,
         });
     }
@@ -33,8 +39,8 @@ export class ApiAuthCommandController {
     @Post('register')
     public async register(
         @Res({ passthrough: true }) response: Response,
-        @Body() { email, password }: ApiRegister.Request,
-    ): Promise<ApiRegister.Response> {
+        @Body() { email, password }: HttpRegister.Request,
+    ): Promise<HttpRegister.Response> {
         const { accessToken, refreshToken } =
             await this.authCommandsService.register({
                 email,
@@ -56,8 +62,8 @@ export class ApiAuthCommandController {
     public async login(
         // @Req() request: Request,
         @Res({ passthrough: true }) response: Response,
-        @Body() { email, password }: ApiLogin.Request,
-    ): Promise<ApiLogin.Response> {
+        @Body() { email, password }: HttpLogin.Request,
+    ): Promise<HttpLogin.Response> {
         const { accessToken, refreshToken } =
             await this.authCommandsService.login({
                 email,
@@ -82,7 +88,7 @@ export class ApiAuthCommandController {
         // @JWTPayload() user: ITokenPayload,
         // @Req() request: Request,
         // @Res({ passthrough: true }) response: Response,
-    ): Promise<ApiRefresh.Response> {
+    ): Promise<HttpRefresh.Response> {
         if (!refreshToken) throw new UnauthorizedException();
 
         const { accessToken } = await this.authCommandsService.refresh({
@@ -99,7 +105,7 @@ export class ApiAuthCommandController {
     public async logout(
         @Cookies('refreshToken') refreshToken: string,
         @Res({ passthrough: true }) response: Response,
-    ): Promise<ApiLogout.Response> {
+    ): Promise<HttpLogout.Response> {
         const res = await this.authCommandsService.logout({ refreshToken });
 
         response.cookie('refreshToken', refreshToken, {

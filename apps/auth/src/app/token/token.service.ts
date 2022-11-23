@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { TokenRepository } from './token.repository';
 import { Role } from '@prisma/client/scripts/user-client';
 import { RefreshToken } from '@prisma/client/scripts/auth-client';
-import { UUUIDService } from '../common/uuid.service';
+import { UUIDService } from '../common/uuid.service';
 
 @Injectable()
 export class TokenService {
@@ -14,7 +14,7 @@ export class TokenService {
         private readonly jwtService: JwtService,
         private readonly tokenRepository: TokenRepository,
         private readonly logger: Logger,
-        private readonly uuidService: UUUIDService,
+        private readonly uuidService: UUIDService,
     ) {
         this.logger = new Logger(TokenService.name);
         this.logger.debug(`${TokenService.name} init`);

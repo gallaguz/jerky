@@ -1,31 +1,26 @@
-import { IUserEntity, TRole, Role } from '@jerky/interfaces';
+import { IUserEntity, TRole } from '@jerky/interfaces';
 import { UserBase } from './user.base';
 import { compare, genSalt, hash } from 'bcryptjs';
+import { Role } from '@jerky/enums';
 
 export class UserEntity extends UserBase implements IUserEntity {
     email: string;
     role: TRole;
 
     constructor(
+        uuid?: string,
         email?: string,
         passwordHash?: string,
         role: TRole = Role.USER,
     ) {
         super();
-        this.generateUUID();
-
-        if (email) {
-            this.email = email;
-        }
-        if (passwordHash) {
-            this._passwordHash = passwordHash;
-        }
-        if (role) {
-            this.role = role;
-        }
+        if (email) this.email = email;
+        if (passwordHash) this._passwordHash = passwordHash;
+        if (role) this.role = role;
+        this._uuid = uuid ?? this.generateUUID();
     }
 
-    public async setPassword(password: string): Promise<UserEntity> {
+    public async setPassword(password: string): Promise<this> {
         const salt = await genSalt(10);
         this._passwordHash = await hash(password, salt);
         return this;
@@ -40,9 +35,8 @@ export class UserEntity extends UserBase implements IUserEntity {
         return this;
     }
 
-    public updatePassword(passwordHash: string): this {
-        this._passwordHash = passwordHash;
-        return this;
+    public async updatePassword(newPassword: string): Promise<this> {
+        return await this.setPassword(newPassword);
     }
 
     public updateRole(role: TRole): this {
