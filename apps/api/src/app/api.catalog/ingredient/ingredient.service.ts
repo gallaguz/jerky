@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { RMQService } from 'nestjs-rmq';
 import { UUUIDService } from '../../common/uuid.service';
 import {
-    HttpCategoryCreate,
+    HttpIngredientCreate,
     HttpIngredientFindFiltered,
     IngredientCreate,
     IngredientFindFiltered,
@@ -21,8 +21,8 @@ export class IngredientService {
     ) {}
 
     public async create(
-        dto: HttpCategoryCreate.Request,
-    ): Promise<HttpCategoryCreate.Response> {
+        dto: HttpIngredientCreate.Request,
+    ): Promise<HttpIngredientCreate.Response> {
         try {
             return await this.rmqService.send<
                 IngredientCreate.Request,
