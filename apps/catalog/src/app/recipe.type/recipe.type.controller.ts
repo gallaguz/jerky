@@ -1,10 +1,10 @@
 import { Body, Controller } from '@nestjs/common';
-import { RecipeTypeService } from './recipe.type.service';
+import { RecipeTypeService } from './services/recipe.type.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
     RecipeTypeCreate,
     RecipeTypeFindFiltered,
-    RecipeTypeFindOne,
+    RecipeTypeFindOneUuid,
     RecipeTypeRemove,
     RecipeTypeUpdate,
 } from '@jerky/contracts';
@@ -30,11 +30,11 @@ export class RecipeTypeController {
     }
 
     @RMQValidate()
-    @RMQRoute(RecipeTypeFindOne.topic)
+    @RMQRoute(RecipeTypeFindOneUuid.topic)
     public async findOne(
-        @Body() props: RecipeTypeFindOne.Request,
-    ): Promise<RecipeTypeFindOne.Response> {
-        return await this.recipeTypeService.findOne(props);
+        @Body() props: RecipeTypeFindOneUuid.Request,
+    ): Promise<RecipeTypeFindOneUuid.Response> {
+        return await this.recipeTypeService.findOneUuid(props);
     }
 
     @RMQValidate()

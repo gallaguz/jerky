@@ -1,6 +1,6 @@
-import { CategoryFindOne } from '../../../rmq';
+import { CategoryFindOneUuidQueryContract } from '../../../rmq';
 
 export namespace HttpCategoryFindOne {
-    export class Request extends CategoryFindOne.Request {}
-    export type Response = CategoryFindOne.Response;
+    export class Request extends CategoryFindOneUuidQueryContract.Request {}
+    export type Response = CategoryFindOneUuidQueryContract.Response;
 }

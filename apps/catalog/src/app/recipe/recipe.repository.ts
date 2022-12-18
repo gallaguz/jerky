@@ -1,75 +1,61 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { ConfigService } from '@nestjs/config';
-import { Recipe } from '@prisma/client/scripts/catalog-client';
+import { Prisma, Recipe } from '@prisma/client/scripts/catalog-client';
 import { ERROR_MESSAGES } from '@jerky/constants';
 import SOMETHING_WENT_WRONG = ERROR_MESSAGES.SOMETHING_WENT_WRONG;
-import { RepositoryHelper, IBaseRepository } from '../common/base.repository';
-import { IRecipeEntity } from '@jerky/interfaces';
-import { FindFiltered } from '@jerky/contracts';
+import { IBaseRepository, BaseRepository } from '../common';
+import RecipeCreateInput = Prisma.RecipeCreateInput;
+import RecipeUpdateInput = Prisma.RecipeUpdateInput;
+import RecipeWhereInput = Prisma.RecipeWhereInput;
+import RecipeWhereUniqueInput = Prisma.RecipeWhereUniqueInput;
+import RecipeFindManyArgs = Prisma.RecipeFindManyArgs;
 
 @Injectable()
 export class RecipeRepository
-    extends RepositoryHelper
-    implements IBaseRepository<Recipe>
+    extends BaseRepository
+    implements
+        IBaseRepository<
+            Recipe,
+            RecipeCreateInput,
+            RecipeUpdateInput,
+            RecipeFindManyArgs,
+            RecipeWhereUniqueInput,
+            RecipeWhereInput,
+            RecipeWhereUniqueInput
+        >
 {
     constructor(
-        private readonly databaseService: DatabaseService,
-        configService: ConfigService,
+        protected readonly databaseService: DatabaseService,
+        protected readonly configService: ConfigService,
     ) {
-        super(configService);
+        super();
     }
 
-    public async create({
-        uuid,
-        title,
-        description,
-        rawUuid,
-        categoryUuid,
-        recipeTypeUuid,
-    }: IRecipeEntity): Promise<Recipe> {
+    public async create(props: RecipeCreateInput): Promise<Recipe> {
         return await this.databaseService.recipe
-            .create({
-                data: {
-                    uuid,
-                    title,
-                    description,
-                    recipeTypeUuid,
-                    categoryUuid,
-                    rawUuid,
-                },
-            })
+            .create({ data: props })
             .catch((error) => {
                 this.handleError(error);
                 throw new BadRequestException(SOMETHING_WENT_WRONG);
             });
     }
 
-    public async findFiltered({
-        take,
-        skip,
-        orderBy,
-        searchString,
-    }: FindFiltered): Promise<Recipe[]> {
+    public async findFiltered(props: RecipeFindManyArgs): Promise<Recipe[]> {
         return await this.databaseService.recipe
-            .findMany({
-                where: this.or(searchString),
-                take: this.take(take),
-                skip: this.skip(skip),
-                orderBy: this.orderBy(orderBy),
-            })
+            .findMany(props)
             .catch((error) => {
                 this.handleError(error);
                 throw new BadRequestException(SOMETHING_WENT_WRONG);
             });
     }
 
-    public async findOne(uuid: string): Promise<Recipe | null> {
+    public async findOneUuid(
+        props: RecipeWhereUniqueInput,
+    ): Promise<Recipe | null> {
         return await this.databaseService.recipe
             .findUnique({
-                where: {
-                    uuid,
-                },
+                where: props,
             })
             .catch((error) => {
                 this.handleError(error);
@@ -77,26 +63,27 @@ export class RecipeRepository
             });
     }
 
-    public async update({
-        uuid,
-        title,
-        description,
-        rawUuid,
-        categoryUuid,
-        recipeTypeUuid,
-    }: IRecipeEntity): Promise<Recipe> {
+    public async findOneTitle(props: RecipeWhereInput): Promise<Recipe | null> {
+        return await this.databaseService.recipe
+            .findFirst({
+                where: props,
+            })
+            .catch((error) => {
+                this.handleError(error);
+                throw new BadRequestException(SOMETHING_WENT_WRONG);
+            });
+    }
+
+    public async update(
+        uuid: string,
+        props: RecipeUpdateInput,
+    ): Promise<Recipe> {
         return await this.databaseService.recipe
             .update({
                 where: {
                     uuid,
                 },
-                data: {
-                    title,
-                    description,
-                    recipeTypeUuid,
-                    categoryUuid,
-                    rawUuid,
-                },
+                data: props,
             })
             .catch((error) => {
                 this.handleError(error);
@@ -104,12 +91,10 @@ export class RecipeRepository
             });
     }
 
-    public async remove(uuid: string): Promise<Recipe> {
+    public async remove(props: RecipeWhereUniqueInput): Promise<Recipe> {
         return await this.databaseService.recipe
             .delete({
-                where: {
-                    uuid,
-                },
+                where: props,
             })
             .catch((error) => {
                 this.handleError(error);

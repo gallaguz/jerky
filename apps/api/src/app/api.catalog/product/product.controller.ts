@@ -1,14 +1,4 @@
-import {
-    Controller,
-    Get,
-    Post,
-    Body,
-    Patch,
-    Param,
-    Delete,
-    UsePipes,
-    ValidationPipe,
-} from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ProductService } from './product.service';
 
 @Controller('product')

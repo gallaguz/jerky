@@ -1,13 +1,11 @@
-import { IsUUID } from 'class-validator';
-import { ICategoryEntity, IRecipeEntity } from '@jerky/interfaces';
+import { Recipe } from '@prisma/client/scripts/catalog-client';
+import { PickType } from '@nestjs/mapped-types';
+import { RecipeDto } from '../recipe.dto';
 
 export namespace RecipeRemove {
     export const topic = 'catalog.recipe-remove.command';
 
-    export class Request {
-        @IsUUID()
-        uuid: string;
-    }
+    export class Request extends PickType(RecipeDto, ['uuid'] as const) {}
 
-    export type Response = IRecipeEntity;
+    export type Response = Recipe;
 }

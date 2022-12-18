@@ -1,10 +1,10 @@
-import { ICategoryEntity } from '@jerky/interfaces';
-import { FindFiltered } from '../../../../common';
+import { FindManyArgs } from '../../../../common';
+import { Ingredient } from '@prisma/client/scripts/catalog-client';
 
 export namespace IngredientFindFiltered {
     export const topic = 'catalog.ingredient-find-filtered.query';
 
-    export class Request extends FindFiltered {}
+    export class Request extends FindManyArgs {}
 
-    export type Response = ICategoryEntity[];
+    export type Response = Ingredient[];
 }

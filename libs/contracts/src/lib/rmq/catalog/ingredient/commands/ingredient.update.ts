@@ -1,35 +1,13 @@
-import {
-    IsNumber,
-    IsOptional,
-    IsPositive,
-    IsString,
-    IsUUID,
-    MaxLength,
-    MinLength,
-} from 'class-validator';
-import { ICategoryEntity, IIngredientEntity } from '@jerky/interfaces';
+import { Ingredient } from '@prisma/client/scripts/catalog-client';
+import { PartialType, PickType } from '@nestjs/mapped-types';
+import { IngredientDto } from '../ingredient.dto';
 
 export namespace IngredientUpdate {
     export const topic = 'catalog.ingredient-update.command';
 
-    export class Request {
-        @IsUUID()
+    export class Request extends PartialType(IngredientDto) {
         uuid: string;
-
-        @IsPositive()
-        @IsNumber()
-        @IsOptional()
-        price?: number;
-
-        @MaxLength(128)
-        @MinLength(4)
-        @IsString()
-        title?: string;
-
-        @IsString()
-        @IsOptional()
-        description?: string;
     }
 
-    export type Response = IIngredientEntity;
+    export type Response = Ingredient;
 }

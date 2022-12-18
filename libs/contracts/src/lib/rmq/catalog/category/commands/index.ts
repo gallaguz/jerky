@@ -1,3 +1,3 @@
-export * from './category.create';
-export * from './category.update';
-export * from './category.remove';
+export * from './category.create.command.contract';
+export * from './category.update.command.contract';
+export * from './category.remove.command.contract';

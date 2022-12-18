@@ -1,3 +1,3 @@
-export * from './ingredient.update.event';
-export * from './ingredient.remove.event';
-export * from './ingredient.create.event';
+export * from './ingredient.update.event.contract';
+export * from './ingredient.remove.event.contract';
+export * from './ingredient.create.event.contract';

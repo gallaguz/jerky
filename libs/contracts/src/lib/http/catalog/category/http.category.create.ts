@@ -1,6 +1,6 @@
-import { CategoryCreate } from '../../../rmq';
+import { CategoryCreateCommandContract } from '../../../rmq';
 
 export namespace HttpCategoryCreate {
-    export class Request extends CategoryCreate.Request {}
-    export type Response = CategoryCreate.Response;
+    export class Request extends CategoryCreateCommandContract.Request {}
+    export type Response = CategoryCreateCommandContract.Response;
 }

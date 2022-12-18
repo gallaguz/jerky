@@ -1,6 +1,6 @@
-import { RawFindFiltered } from '../../../rmq';
+import { RawFindFilteredQueryContract } from '../../../rmq';
 
 export namespace HttpRawFindFiltered {
-    export class Request extends RawFindFiltered.Request {}
-    export type Response = RawFindFiltered.Response;
+    export class Request extends RawFindFilteredQueryContract.Request {}
+    export type Response = RawFindFilteredQueryContract.Response;
 }

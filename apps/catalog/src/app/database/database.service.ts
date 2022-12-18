@@ -5,14 +5,19 @@ import {
     Logger,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client/scripts/catalog-client';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DatabaseService extends PrismaClient implements OnModuleInit {
-    constructor() {
-        super({
-            errorFormat: 'pretty',
-            log: ['query', 'info', 'warn', 'error'],
-        });
+    constructor(private readonly configService: ConfigService) {
+        super(
+            Number(configService.get('LOG_DB')) === 1
+                ? {
+                      errorFormat: 'pretty',
+                      log: ['query', 'info', 'warn', 'error'],
+                  }
+                : {},
+        );
     }
 
     public async onModuleInit(): Promise<void> {

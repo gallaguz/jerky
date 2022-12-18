@@ -1,28 +1,10 @@
-import {
-    IsOptional,
-    IsString,
-    IsUUID,
-    MaxLength,
-    MinLength,
-} from 'class-validator';
-import { ICategoryEntity, IProductEntity } from '@jerky/interfaces';
+import { Product } from '@prisma/client/scripts/catalog-client';
+import { ProductDto } from '../product.dto';
 
 export namespace ProductUpdate {
     export const topic = 'catalog.product-update.command';
 
-    export class Request {
-        @IsUUID()
-        uuid: string;
+    export class Request extends ProductDto {}
 
-        @MaxLength(128)
-        @MinLength(4)
-        @IsString()
-        title?: string;
-
-        @IsString()
-        @IsOptional()
-        description?: string;
-    }
-
-    export type Response = IProductEntity;
+    export type Response = Product;
 }

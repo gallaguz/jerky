@@ -1,20 +1,38 @@
+import { NestApplication } from '@nestjs/core';
+import { RMQModule, RMQService, RMQTestService } from 'nestjs-rmq';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConfigModule } from '@nestjs/config';
+import { ENVConfig } from '../../config/env.config';
 import { RecipeTypeController } from './recipe.type.controller';
-import { RecipeTypeService } from './recipe.type.service';
+import { RecipeType } from '@prisma/client/scripts/catalog-client';
+import { RecipeTypeModule } from './recipe.type.module';
 
-describe('RecipeTypeController', () => {
-    let controller: RecipeTypeController;
+describe(`[ RecipeType Controller ]`, () => {
+    let app: NestApplication;
+    let recipeTypeController: RecipeTypeController;
+    let rmqService: RMQTestService;
 
-    beforeEach(async () => {
+    beforeAll(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [RecipeTypeController],
-            providers: [RecipeTypeService],
+            imports: [
+                ConfigModule.forRoot(ENVConfig()),
+                RMQModule.forTest({}),
+                RecipeTypeModule,
+            ],
         }).compile();
 
-        controller = module.get<RecipeTypeController>(RecipeTypeController);
+        app = module.createNestApplication();
+        recipeTypeController =
+            app.get<RecipeTypeController>(RecipeTypeController);
+        rmqService = app.get(RMQService);
+        await app.init();
     });
 
-    it('should be defined', () => {
-        expect(controller).toBeDefined();
+    describe(`[ RMQ ] CRUD`, () => {
+        const recipeTypes: RecipeType[] = [];
+
+        it('[ app ] toBeDefined', function () {
+            expect(app).toBeDefined();
+        });
     });
 });

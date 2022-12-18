@@ -1,6 +1,6 @@
-import { RawFindOne } from '../../../rmq';
+import { RawFindOneUuidQueryContract } from '../../../rmq';
 
 export namespace HttpRawFindOne {
-    export class Request extends RawFindOne.Request {}
-    export type Response = RawFindOne.Response;
+    export class Request extends RawFindOneUuidQueryContract.Request {}
+    export type Response = RawFindOneUuidQueryContract.Response;
 }

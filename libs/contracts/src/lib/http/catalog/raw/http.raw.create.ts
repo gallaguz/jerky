@@ -1,6 +1,6 @@
-import { RawCreate } from '../../../rmq';
+import { RawCreateCommandContract } from '../../../rmq';
 
 export namespace HttpRawCreate {
-    export class Request extends RawCreate.Request {}
-    export type Response = RawCreate.Response;
+    export class Request extends RawCreateCommandContract.Request {}
+    export type Response = RawCreateCommandContract.Response;
 }

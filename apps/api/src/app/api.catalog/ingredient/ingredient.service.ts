@@ -6,7 +6,7 @@ import {
     HttpIngredientFindFiltered,
     IngredientCreate,
     IngredientFindFiltered,
-    IngredientFindOne,
+    IngredientFindOneUuid,
     IngredientRemove,
     IngredientUpdate,
 } from '@jerky/contracts';
@@ -65,13 +65,13 @@ export class IngredientService {
     }
 
     public async findOne(
-        dto: IngredientFindOne.Request,
-    ): Promise<IngredientFindOne.Response> {
+        dto: IngredientFindOneUuid.Request,
+    ): Promise<IngredientFindOneUuid.Response> {
         try {
             return await this.rmqService.send<
-                IngredientFindOne.Request,
-                IngredientFindOne.Response
-            >(IngredientFindOne.topic, <IngredientFindOne.Request>dto, {
+                IngredientFindOneUuid.Request,
+                IngredientFindOneUuid.Response
+            >(IngredientFindOneUuid.topic, <IngredientFindOneUuid.Request>dto, {
                 headers: {
                     requestId: this.uuidService.getUuid(),
                 },

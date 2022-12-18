@@ -1,41 +1,40 @@
-import { ICategoryEntity, ICategoryProps } from '@jerky/interfaces';
-
-import { BaseEntity } from '../common/base.entity';
 import {
-    CategoryCreateEvent,
+    ICategoryCreate,
+    ICategoryEntity,
+    ICategoryUpdate,
+} from '@jerky/interfaces';
+import { BaseEntity } from '../common';
+import {
+    CategoryCreateEventContract,
     CategoryRemoveEvent,
-    CategoryUpdateEvent,
+    CategoryUpdateEventContract,
 } from '@jerky/contracts';
+import { Category } from '@prisma/client/scripts/catalog-client';
 
 export class CategoryEntity extends BaseEntity implements ICategoryEntity {
-    constructor(uuid?: string, props?: ICategoryProps) {
-        super(uuid, props?.title, props?.description);
+    constructor(props: ICategoryCreate) {
+        super(props.uuid, props.title, props.description);
 
         return this;
     }
 
-    public update(props: ICategoryProps): void {
-        if (props?.title) this.setTitle(props.title);
-        if (props?.description) this.setDescription(props.description);
+    public update(props: ICategoryUpdate): void {
+        if (props.title) this.setTitle(props.title);
+        if (props.description) this.setDescription(props.description);
     }
 
-    public createEvent(props: ICategoryProps): void {
-        this.publishEvent(CategoryCreateEvent.topic, props);
+    public createEvent(newCategory: Category): void {
+        this.publishEvent(CategoryCreateEventContract.topic, newCategory);
     }
 
-    public updateEvent(props: ICategoryProps): void {
-        this.publishEvent(CategoryUpdateEvent.topic, props);
+    public updateEvent(existed: Category, updated: Category): void {
+        this.publishEvent(CategoryUpdateEventContract.topic, {
+            existed,
+            updated,
+        });
     }
 
-    public removeEvent(): void {
-        this.publishEvent(CategoryRemoveEvent.topic);
-    }
-
-    public toJSON(): ICategoryEntity {
-        return {
-            uuid: this.uuid,
-            title: this.title,
-            description: this.description,
-        };
+    public removeEvent(category: Category): void {
+        this.publishEvent(CategoryRemoveEvent.topic, category);
     }
 }

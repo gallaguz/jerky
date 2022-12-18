@@ -1,14 +1,23 @@
-export interface IRawEntity {
+import {
+    CreateBase,
+    FindOneTitleBase,
+    FindOneUuidBase,
+    IBaseEntity,
+    RemoveBase,
+    UpdateBase,
+} from '../common';
+import { Raw } from '@prisma/client/scripts/catalog-client';
+
+export interface IRawEntity extends IBaseEntity<Raw, CreateBase> {
     uuid: string;
     title: string;
-    description: string;
+    description?: string;
+
     price: number;
-    categoryUuid: string;
 }
 
-export interface IRawProps {
-    title?: string | null;
-    description?: string | null;
-    price?: number | null;
-    categoryUuid?: string | null;
-}
+export type IRawCreate = CreateBase;
+export type IRawUpdate = UpdateBase & { price: number };
+export type IRawRemove = RemoveBase;
+export type IRawFindOneUuid = FindOneUuidBase;
+export type IRawFindOneTitle = FindOneTitleBase;

@@ -1,13 +1,11 @@
-import { IsUUID } from 'class-validator';
-import { ICategoryEntity, IProductEntity } from '@jerky/interfaces';
+import { Product } from '@prisma/client/scripts/catalog-client';
+import { PickType } from '@nestjs/mapped-types';
+import { ProductDto } from '../product.dto';
 
 export namespace ProductRemove {
     export const topic = 'catalog.product-remove.command';
 
-    export class Request {
-        @IsUUID()
-        uuid: string;
-    }
+    export class Request extends PickType(ProductDto, ['uuid'] as const) {}
 
-    export type Response = IProductEntity;
+    export type Response = Product;
 }

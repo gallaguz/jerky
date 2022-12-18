@@ -40,6 +40,20 @@ model Raw {
   product  Product[]
 }
 
+/// Salty | Spicy | Marinated | Special | BBQ | ...
+model RecipeType {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uuid        String  @unique
+  title       String  @unique
+  description String?
+
+  recipe  Recipe[]
+  product Product[]
+}
+
 ///
 model Recipe {
   id        Int      @id @default(autoincrement())
@@ -60,15 +74,37 @@ model Recipe {
   products       Product[]
 }
 
-/// Salt | Red Paper | Black Paper | Paprika | Nitrit Salt | Coreander | ...
-model Ingredient {
+/// Jerky Chicken Marinated | Sausages Beef Salty | ...
+model Product {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   uuid        String  @unique
   title       String
-  form        String?
+  description String?
+
+  price       Int?
+
+  recipeTypeUuid String
+  categoryUuid   String
+  rawUuid        String
+  recipeUuid     String
+  category       Category   @relation(fields: [categoryUuid], references: [uuid])
+  raw            Raw        @relation(fields: [rawUuid], references: [uuid])
+  recipeType     RecipeType @relation(fields: [recipeTypeUuid], references: [uuid])
+  recipe         Recipe     @relation(fields: [recipeUuid], references: [uuid])
+}
+
+/// Salt | Red Paper | Black Paper | Paprika | Nitrit Salt | Coreander | ...
+model Ingredient {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  uuid        String          @unique
+  title       String
+  form        IngredientForm?
   description String?
 
   price Float
@@ -90,37 +126,13 @@ model IngredientQty {
   ingredient Ingredient[]
 }
 
-/// Salty | Spicy | Marinated | Special | BBQ | ...
-model RecipeType {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  uuid        String  @unique
-  title       String  @unique
-  description String?
 
-  recipe  Recipe[]
-  product Product[]
-}
-
-/// Jerky Chicken Marinated | Sausages Beef Salty | ...
-model Product {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  uuid        String  @unique
-  title       String
-  price       Int?
-  description String?
-
-  recipeTypeUuid String
-  categoryUuid   String
-  rawUuid        String
-  recipeUuid     String
-  category       Category   @relation(fields: [categoryUuid], references: [uuid])
-  raw            Raw        @relation(fields: [rawUuid], references: [uuid])
-  recipeType     RecipeType @relation(fields: [recipeTypeUuid], references: [uuid])
-  recipe         Recipe     @relation(fields: [recipeUuid], references: [uuid])
+enum IngredientForm {
+  SAND
+  FLAKES
+  POWDER
+  LIQUOR
+  SPLIT
+  VISCOUS
 }

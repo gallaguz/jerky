@@ -1,16 +1,19 @@
 import { Body, Controller } from '@nestjs/common';
-import { RecipeService } from './recipe.service';
+import { RecipeService } from './services/recipe.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
     RecipeCreate,
     RecipeFindFiltered,
-    RecipeFindOne,
+    RecipeFindOneTitle,
+    RecipeFindOneUuid,
     RecipeRemove,
     RecipeUpdate,
 } from '@jerky/contracts';
+import { IController } from '../common/controller.interface';
+import { Recipe } from '@prisma/client/scripts/catalog-client';
 
 @Controller()
-export class RecipeController {
+export class RecipeController implements IController<Recipe> {
     constructor(private readonly recipeService: RecipeService) {}
 
     @RMQValidate()
@@ -30,11 +33,19 @@ export class RecipeController {
     }
 
     @RMQValidate()
-    @RMQRoute(RecipeFindOne.topic)
-    public async findOne(
-        @Body() props: RecipeFindOne.Request,
-    ): Promise<RecipeFindOne.Response> {
-        return await this.recipeService.findOne(props);
+    @RMQRoute(RecipeFindOneUuid.topic)
+    public async findOneUuid(
+        @Body() props: RecipeFindOneUuid.Request,
+    ): Promise<RecipeFindOneUuid.Response> {
+        return await this.recipeService.findOneUuid(props);
+    }
+
+    @RMQValidate()
+    @RMQRoute(RecipeFindOneTitle.topic)
+    public async findOneTitle(
+        @Body() props: RecipeFindOneTitle.Request,
+    ): Promise<RecipeFindOneTitle.Response> {
+        return await this.recipeService.findOneTitle(props);
     }
 
     @RMQValidate()

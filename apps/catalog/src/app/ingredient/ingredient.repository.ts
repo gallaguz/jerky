@@ -1,141 +1,110 @@
 import { DatabaseService } from '../database/database.service';
 import { ConfigService } from '@nestjs/config';
-import {
-    BadRequestException,
-    ConflictException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
-import { IngredientEntity } from './ingredient.entity';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ERROR_MESSAGES } from '@jerky/constants';
 import SOMETHING_WENT_WRONG = ERROR_MESSAGES.SOMETHING_WENT_WRONG;
+import { BaseRepository, IBaseRepository } from '../common';
 import { Ingredient, Prisma } from '@prisma/client/scripts/catalog-client';
-import { FindFiltered } from '@jerky/contracts';
+import IngredientCreateInput = Prisma.IngredientCreateInput;
+import IngredientUpdateInput = Prisma.IngredientUpdateInput;
+import IngredientFindManyArgs = Prisma.IngredientFindManyArgs;
+import IngredientWhereUniqueInput = Prisma.IngredientWhereUniqueInput;
+import IngredientWhereInput = Prisma.IngredientWhereInput;
 
 @Injectable()
-export class IngredientRepository {
+export class IngredientRepository
+    extends BaseRepository
+    implements
+        IBaseRepository<
+            Ingredient,
+            IngredientCreateInput,
+            IngredientUpdateInput,
+            IngredientFindManyArgs,
+            IngredientWhereUniqueInput,
+            IngredientWhereInput,
+            IngredientWhereUniqueInput
+        >
+{
     constructor(
-        private readonly databaseService: DatabaseService,
-        private readonly configService: ConfigService,
-    ) {}
+        protected readonly databaseService: DatabaseService,
+        protected readonly configService: ConfigService,
+    ) {
+        super();
+    }
 
-    public async create({
-        uuid,
-        title,
-        price,
-        description,
-    }: IngredientEntity): Promise<Ingredient> {
-        try {
-            return await this.databaseService.ingredient.create({
-                data: {
-                    uuid,
-                    title,
-                    price,
-                    description,
-                },
-            });
-        } catch (e) {
-            if (e instanceof Prisma.PrismaClientUnknownRequestError) {
+    public async create(props: IngredientCreateInput): Promise<Ingredient> {
+        return await this.databaseService.ingredient
+            .create({ data: props })
+            .catch((error) => {
+                this.handleError(error);
                 throw new BadRequestException(SOMETHING_WENT_WRONG);
-            }
-
-            if (e instanceof Prisma.PrismaClientValidationError) {
-                throw new BadRequestException();
-            }
-            if (e instanceof Prisma.PrismaClientKnownRequestError) {
-                if (e.code === 'P2002') throw new ConflictException();
-            }
-            throw new BadRequestException(SOMETHING_WENT_WRONG);
-        }
-    }
-
-    public async findFiltered({
-        take,
-        skip,
-        orderBy,
-        searchString,
-    }: FindFiltered): Promise<Ingredient[]> {
-        try {
-            const or = searchString
-                ? {
-                      OR: [{ title: { contains: searchString } }],
-                  }
-                : {};
-            return await this.databaseService.ingredient.findMany({
-                where: {
-                    ...or,
-                },
-                take:
-                    Number(take) ||
-                    Number(this.configService.get('TAKE_DEFAULT')),
-                skip: Number(skip) || undefined,
-                orderBy: {
-                    title:
-                        orderBy || this.configService.get('ORDER_BY_DEFAULT'),
-                },
             });
-        } catch (e) {
-            if (e instanceof Error) {
-                console.log(e.message);
-            }
-            throw new BadRequestException(SOMETHING_WENT_WRONG);
-        }
     }
 
-    public async findOne(uuid: string): Promise<Ingredient | null> {
-        try {
-            return await this.databaseService.ingredient.findUnique({
+    public async findFiltered(
+        props: IngredientFindManyArgs,
+    ): Promise<Ingredient[]> {
+        return await this.databaseService.ingredient
+            .findMany(props)
+            .catch((error) => {
+                this.handleError(error);
+                throw new BadRequestException(SOMETHING_WENT_WRONG);
+            });
+    }
+
+    public async findOneUuid(
+        props: IngredientWhereUniqueInput,
+    ): Promise<Ingredient | null> {
+        return await this.databaseService.ingredient
+            .findUnique({
+                where: props,
+            })
+            .catch((error) => {
+                this.handleError(error);
+                throw new BadRequestException(SOMETHING_WENT_WRONG);
+            });
+    }
+
+    public async findOneTitle(
+        props: IngredientWhereInput,
+    ): Promise<Ingredient | null> {
+        return await this.databaseService.ingredient
+            .findFirst({
+                where: props,
+            })
+            .catch((error) => {
+                this.handleError(error);
+                throw new BadRequestException(SOMETHING_WENT_WRONG);
+            });
+    }
+
+    public async update(
+        uuid: string,
+        props: IngredientUpdateInput,
+    ): Promise<Ingredient> {
+        return await this.databaseService.ingredient
+            .update({
                 where: {
                     uuid,
                 },
+                data: props,
+            })
+            .catch((error) => {
+                this.handleError(error);
+                throw new BadRequestException(SOMETHING_WENT_WRONG);
             });
-        } catch (e) {
-            if (e instanceof Error) {
-                console.log(e.message);
-            }
-            throw new BadRequestException(SOMETHING_WENT_WRONG);
-        }
     }
 
-    public async update({
-        uuid,
-        title,
-        price,
-        description,
-    }: IngredientEntity): Promise<Ingredient> {
-        try {
-            return await this.databaseService.ingredient.update({
-                where: {
-                    uuid,
-                },
-                data: {
-                    title,
-                    price,
-                    description,
-                },
+    public async remove(
+        props: IngredientWhereUniqueInput,
+    ): Promise<Ingredient> {
+        return this.databaseService.ingredient
+            .delete({
+                where: props,
+            })
+            .catch((error) => {
+                this.handleError(error);
+                throw new BadRequestException(SOMETHING_WENT_WRONG);
             });
-        } catch (e) {
-            if (e instanceof Error) {
-                console.log(e.message);
-                if (e.message.includes('Record to update not found'))
-                    throw new NotFoundException();
-            }
-            throw new BadRequestException(SOMETHING_WENT_WRONG);
-        }
-    }
-
-    public async remove(uuid: string): Promise<Ingredient> {
-        try {
-            return this.databaseService.ingredient.delete({
-                where: {
-                    uuid,
-                },
-            });
-        } catch (e) {
-            if (e instanceof Error) {
-                console.log(e.message);
-            }
-            throw new BadRequestException(SOMETHING_WENT_WRONG);
-        }
     }
 }

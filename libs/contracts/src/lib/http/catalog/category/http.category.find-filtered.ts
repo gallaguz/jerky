@@ -1,6 +1,6 @@
-import { CategoryFindFiltered } from '../../../rmq';
+import { CategoryFindFilteredQueryContract } from '../../../rmq';
 
 export namespace HttpCategoryFindFiltered {
-    export class Request extends CategoryFindFiltered.Request {}
-    export type Response = CategoryFindFiltered.Response;
+    export class Request extends CategoryFindFilteredQueryContract.Request {}
+    export type Response = CategoryFindFilteredQueryContract.Response;
 }

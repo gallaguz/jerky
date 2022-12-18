@@ -1,6 +1,6 @@
-import { ProductFindOne } from '../../../rmq';
+import { ProductFindOneUuid } from '../../../rmq';
 
 export namespace HttpProductFindOne {
-    export class Request extends ProductFindOne.Request {}
-    export type Response = ProductFindOne.Response;
+    export class Request extends ProductFindOneUuid.Request {}
+    export type Response = ProductFindOneUuid.Response;
 }

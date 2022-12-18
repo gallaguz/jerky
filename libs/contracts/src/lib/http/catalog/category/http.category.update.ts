@@ -1,6 +1,6 @@
-import { CategoryUpdate } from '../../../rmq';
+import { CategoryUpdateCommandContract } from '../../../rmq';
 
 export namespace HttpCategoryUpdate {
-    export class Request extends CategoryUpdate.Request {}
-    export type Response = CategoryUpdate.Response;
+    export class Request extends CategoryUpdateCommandContract.Request {}
+    export type Response = CategoryUpdateCommandContract.Response;
 }

@@ -1,32 +1,13 @@
-import {
-    IsOptional,
-    IsString,
-    IsUUID,
-    MaxLength,
-    MinLength,
-} from 'class-validator';
-import { IRecipeTypeEntity } from '@jerky/interfaces';
+import { RecipeType } from '@prisma/client/scripts/catalog-client';
+import { PartialType, PickType } from '@nestjs/mapped-types';
+import { RecipeTypeDto } from '../recipe.type.dto';
 
 export namespace RecipeTypeUpdate {
     export const topic = 'catalog.recipe-type-update.command';
 
-    export class Request {
-        @IsUUID()
+    export class Request extends PartialType(RecipeTypeDto) {
         uuid: string;
-
-        @MaxLength(128)
-        @MinLength(4)
-        @IsString()
-        title?: string;
-
-        @IsString()
-        @IsOptional()
-        comment?: string;
-
-        @IsString()
-        @IsOptional()
-        description?: string;
     }
 
-    export type Response = IRecipeTypeEntity;
+    export type Response = RecipeType;
 }

@@ -1,6 +1,6 @@
-import { RawUpdate } from '../../../rmq';
+import { RawUpdateCommandContract } from '../../../rmq';
 
 export namespace HttpRawUpdate {
-    export class Request extends RawUpdate.Request {}
-    export type Response = RawUpdate.Response;
+    export class Request extends RawUpdateCommandContract.Request {}
+    export type Response = RawUpdateCommandContract.Response;
 }

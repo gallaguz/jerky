@@ -1,6 +1,6 @@
-import { RawRemove } from '../../../rmq';
+import { RawRemoveCommandContract } from '../../../rmq';
 
 export namespace HttpRawRemove {
-    export class Request extends RawRemove.Request {}
-    export type Response = RawRemove.Response;
+    export class Request extends RawRemoveCommandContract.Request {}
+    export type Response = RawRemoveCommandContract.Response;
 }

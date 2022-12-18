@@ -1,1 +1,1 @@
-export * from './ingredient.interface';
+export * from './product.interface';

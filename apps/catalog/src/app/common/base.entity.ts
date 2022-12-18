@@ -1,32 +1,16 @@
 import { IDomainEvent } from '@jerky/interfaces';
 import * as crypto from 'crypto';
 
-export interface IBaseEntityProps {
-    title?: string | null;
-    description?: string | null;
-}
-
-export interface IBaseEntity {
-    uuid: string;
-    title: string;
-    description: string;
-}
-
-export class BaseEntity {
+export abstract class BaseEntity {
     private readonly _uuid: string;
     private _title: string;
-    private _description: string;
+    private _description?: string;
     private _events: IDomainEvent[] = [];
 
-    constructor(
-        uuid?: string,
-        title?: string | null,
-        description?: string | null,
-    ) {
-        this._uuid = uuid ?? crypto.randomUUID();
-
-        if (title) this.setTitle(title);
-        if (description) this.setDescription(description);
+    protected constructor(uuid: string, title?: string, description?: string) {
+        this._uuid = uuid;
+        if (title) this._title = title;
+        if (description) this._description = description;
     }
 
     public get events(): IDomainEvent[] {
@@ -40,6 +24,10 @@ export class BaseEntity {
         });
     }
 
+    public generateUuid = (): string => {
+        return crypto.randomUUID();
+    };
+
     get uuid(): string {
         return this._uuid;
     }
@@ -47,7 +35,7 @@ export class BaseEntity {
     get title(): string {
         return this._title;
     }
-    get description(): string {
+    get description(): string | undefined {
         return this._description;
     }
 
@@ -56,14 +44,6 @@ export class BaseEntity {
     }
 
     public setDescription(newDescription: string): void {
-        this._title = newDescription;
-    }
-
-    public toJSON(): IBaseEntity {
-        return {
-            uuid: this.uuid,
-            title: this.title,
-            description: this.description,
-        };
+        this._description = newDescription;
     }
 }

@@ -1,10 +1,10 @@
 import { Body, Controller } from '@nestjs/common';
-import { ProductService } from './product.service';
+import { ProductService } from './services/product.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
     ProductCreate,
     ProductFindFiltered,
-    ProductFindOne,
+    ProductFindOneUuid,
     ProductRemove,
     ProductUpdate,
 } from '@jerky/contracts';

@@ -1,6 +1,6 @@
-import { RecipeTypeFindOne } from '../../../rmq';
+import { RecipeTypeFindOneUuid } from '../../../rmq';
 
 export namespace HttpRecipeTypeFindOne {
-    export class Request extends RecipeTypeFindOne.Request {}
-    export type Response = RecipeTypeFindOne.Response;
+    export class Request extends RecipeTypeFindOneUuid.Request {}
+    export type Response = RecipeTypeFindOneUuid.Response;
 }

@@ -11,6 +11,7 @@ import { RMQModule } from 'nestjs-rmq';
 import { ENVConfig } from '../config/env.config';
 import { RMQConfig } from '../config/rmq.config';
 import { RecipeTypeModule } from './recipe.type/recipe.type.module';
+import { TagModule } from './tag/tag.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { RecipeTypeModule } from './recipe.type/recipe.type.module';
         IngredientModule,
         RecipeModule,
         RecipeTypeModule,
+        TagModule,
     ],
     providers: [],
 })

@@ -1,12 +1,13 @@
 import { Body, Controller } from '@nestjs/common';
-import { RawService } from './raw.service';
+import { RawService } from './services/raw.service';
 import { RMQRoute, RMQValidate } from 'nestjs-rmq';
 import {
-    RawCreate,
-    RawFindFiltered,
-    RawFindOne,
-    RawRemove,
-    RawUpdate,
+    RawConnectionsCommandContract,
+    RawCreateCommandContract,
+    RawFindFilteredQueryContract,
+    RawFindOneUuidQueryContract,
+    RawRemoveCommandContract,
+    RawUpdateCommandContract,
 } from '@jerky/contracts';
 
 @Controller('')
@@ -14,42 +15,50 @@ export class RawController {
     constructor(private readonly rawService: RawService) {}
 
     @RMQValidate()
-    @RMQRoute(RawCreate.topic)
+    @RMQRoute(RawCreateCommandContract.topic)
     public async create(
-        @Body() props: RawCreate.Request,
-    ): Promise<RawCreate.Response> {
+        @Body() props: RawCreateCommandContract.Request,
+    ): Promise<RawCreateCommandContract.Response> {
         return await this.rawService.create(props);
     }
 
     @RMQValidate()
-    @RMQRoute(RawFindFiltered.topic)
+    @RMQRoute(RawFindFilteredQueryContract.topic)
     public async findFiltered(
-        @Body() props: RawFindFiltered.Request,
-    ): Promise<RawFindFiltered.Response> {
+        @Body() props: RawFindFilteredQueryContract.Request,
+    ): Promise<RawFindFilteredQueryContract.Response> {
         return await this.rawService.findFiltered(props);
     }
 
     @RMQValidate()
-    @RMQRoute(RawFindOne.topic)
+    @RMQRoute(RawFindOneUuidQueryContract.topic)
     public async findOne(
-        @Body() props: RawFindOne.Request,
-    ): Promise<RawFindOne.Response> {
-        return await this.rawService.findOne(props);
+        @Body() props: RawFindOneUuidQueryContract.Request,
+    ): Promise<RawFindOneUuidQueryContract.Response> {
+        return await this.rawService.findOneUuid(props);
     }
 
     @RMQValidate()
-    @RMQRoute(RawUpdate.topic)
+    @RMQRoute(RawUpdateCommandContract.topic)
     public async update(
-        @Body() props: RawUpdate.Request,
-    ): Promise<RawUpdate.Response> {
+        @Body() props: RawUpdateCommandContract.Request,
+    ): Promise<RawUpdateCommandContract.Response> {
         return await this.rawService.update(props);
     }
 
     @RMQValidate()
-    @RMQRoute(RawRemove.topic)
+    @RMQRoute(RawRemoveCommandContract.topic)
     public async remove(
-        @Body() props: RawRemove.Request,
-    ): Promise<RawRemove.Response> {
+        @Body() props: RawRemoveCommandContract.Request,
+    ): Promise<RawRemoveCommandContract.Response> {
         return await this.rawService.remove(props);
+    }
+
+    @RMQValidate()
+    @RMQRoute(RawConnectionsCommandContract.topic)
+    public async updateConnection(
+        props: RawConnectionsCommandContract.Request,
+    ): Promise<RawConnectionsCommandContract.Response> {
+        return await this.rawService.updateConnection(props);
     }
 }

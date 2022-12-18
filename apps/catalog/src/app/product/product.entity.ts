@@ -1,18 +1,28 @@
-import { BaseEntity } from '../common/base.entity';
-import { IProductEntity, IProductProps } from '@jerky/interfaces';
+import { BaseEntity } from '../common';
+import { IProductEntity, IProductDto } from '@jerky/interfaces';
 import {
     ProductCreateEvent,
     ProductRemoveEvent,
     ProductUpdateEvent,
 } from '@jerky/contracts';
+import { Product } from '@prisma/client/scripts/catalog-client';
 
 export class ProductEntity extends BaseEntity implements IProductEntity {
     private _price: number;
+    private _recipeUuid: string;
+    private _recipeTypeUuid: string;
+    private _categoryUuid: string;
+    private _rawUuid: string;
 
-    constructor(uuid?: string, props?: IProductProps) {
-        super(uuid, props?.title, props?.description);
+    constructor(props: IProductDto) {
+        super(props.uuid, props.title, props.description);
 
-        if (props?.price) this._price = props.price;
+        if (props.price) this.setPrice(props.price);
+        if (props.rawUuid) this.setRawUuid(props.rawUuid);
+        if (props.categoryUuid) this.setCategoryUuid(props.categoryUuid);
+        if (props.recipeTypeUuid) this.setRecipeTypeUuid(props.recipeTypeUuid);
+        if (props.recipeUuid) this.setRecipeUuid(props.recipeUuid);
+
         return this;
     }
 
@@ -20,34 +30,61 @@ export class ProductEntity extends BaseEntity implements IProductEntity {
         return this._price;
     }
 
+    get recipeUuid(): string {
+        return this._recipeUuid;
+    }
+
+    get recipeTypeUuid(): string {
+        return this._recipeTypeUuid;
+    }
+
+    get categoryUuid(): string {
+        return this._categoryUuid;
+    }
+
+    get rawUuid(): string {
+        return this._rawUuid;
+    }
+
     public setPrice(newPrice: number): void {
         this._price = newPrice;
     }
 
-    public createEvent(props: IProductProps): void {
-        this.publishEvent(ProductCreateEvent.topic, props);
+    public setRecipeUuid(recipeUuid: string): void {
+        this._recipeUuid = recipeUuid;
     }
 
-    public update(props: IProductProps): void {
-        if (props?.title) this.setTitle(props.title);
-        if (props?.description) this.setDescription(props.description);
-        if (props?.price) this.setPrice(props.price);
+    public setRecipeTypeUuid(recipeTypeUuid: string): void {
+        this._recipeTypeUuid = recipeTypeUuid;
     }
 
-    public updateEvent(props: IProductProps): void {
-        this.publishEvent(ProductUpdateEvent.topic, props);
+    public setCategoryUuid(categoryUuid: string): void {
+        this._categoryUuid = categoryUuid;
     }
 
-    public removeEvent(): void {
-        this.publishEvent(ProductRemoveEvent.topic);
+    public setRawUuid(rawUuid: string): void {
+        this._rawUuid = rawUuid;
     }
 
-    public override toJSON(): IProductEntity {
-        return {
-            uuid: this.uuid,
-            price: this.price,
-            title: this.title,
-            description: this.description,
-        };
+    public update(props: IProductDto): void {
+        if (props.title) this.setTitle(props.title);
+        if (props.description) this.setDescription(props.description);
+        if (props.price) this.setPrice(props.price);
+        if (props.rawUuid) this.setRawUuid(props.rawUuid);
+        if (props.categoryUuid) this.setCategoryUuid(props.categoryUuid);
+        if (props.recipeTypeUuid) this.setRecipeTypeUuid(props.recipeTypeUuid);
+        if (props.recipeUuid) this.setRecipeUuid(props.recipeUuid);
+    }
+
+    public createEvent(created: Product): void {
+        this.publishEvent(ProductCreateEvent.topic, created);
+    }
+
+    public updateEvent(existed: Product, updated: Product): void {
+        this.publishEvent(ProductUpdateEvent.topic, { existed, updated });
+    }
+
+    public removeEvent(removed: Product): void {
+        this.publishEvent(ProductRemoveEvent.topic, removed);
     }
 }

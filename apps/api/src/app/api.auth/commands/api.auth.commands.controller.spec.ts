@@ -4,7 +4,7 @@ import {
     HttpRegister,
     HttpLogin,
     HttpRefresh,
-    UserRemoveEvent,
+    UserRemove,
 } from '@jerky/contracts';
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
@@ -92,13 +92,13 @@ class FakeUserGodLikeEntity {
 
     public async deleteCreatedUser(
         uuid?: string,
-    ): Promise<UserRemoveEvent.Response> {
+    ): Promise<UserRemove.Response> {
         const userUuidToDelete = uuid ?? this._uuid;
         return await request(this._api.getHttpServer())
             .delete(`/v1/user/${userUuidToDelete}`)
             .expect(200)
             .then(({ body }: request.Response) => {
-                expect(<UserRemoveEvent.Response>body.uuid).toEqual(
+                expect(<UserRemove.Response>body.uuid).toEqual(
                     userUuidToDelete,
                 );
                 return body;

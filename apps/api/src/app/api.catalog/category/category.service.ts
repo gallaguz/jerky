@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
-    CategoryCreate,
-    CategoryRemove,
-    CategoryFindFiltered,
-    CategoryFindOne,
-    CategoryUpdate,
+    CategoryCreateCommandContract,
+    CategoryRemoveCommandContract,
+    CategoryFindFilteredQueryContract,
+    CategoryFindOneUuidQueryContract,
+    CategoryUpdateCommandContract,
     HttpCategoryCreate,
     HttpCategoryFindFiltered,
     HttpCategoryUpdate,
@@ -23,16 +23,20 @@ export class CategoryService {
 
     public async create(
         dto: HttpCategoryCreate.Request,
-    ): Promise<CategoryCreate.Response> {
+    ): Promise<CategoryCreateCommandContract.Response> {
         try {
             return await this.rmqService.send<
-                CategoryCreate.Request,
-                CategoryCreate.Response
-            >(CategoryCreate.topic, <CategoryCreate.Request>dto, {
-                headers: {
-                    requestId: this.uuidService.getUuid(),
+                CategoryCreateCommandContract.Request,
+                CategoryCreateCommandContract.Response
+            >(
+                CategoryCreateCommandContract.topic,
+                <CategoryCreateCommandContract.Request>dto,
+                {
+                    headers: {
+                        requestId: this.uuidService.getUuid(),
+                    },
                 },
-            });
+            );
         } catch (e) {
             if (e instanceof Error) {
                 throw new BadRequestException(e.message);
@@ -43,16 +47,20 @@ export class CategoryService {
 
     public async findFiltered(
         dto: HttpCategoryFindFiltered.Request,
-    ): Promise<CategoryFindFiltered.Response> {
+    ): Promise<CategoryFindFilteredQueryContract.Response> {
         try {
             return await this.rmqService.send<
-                CategoryFindFiltered.Request,
-                CategoryFindFiltered.Response
-            >(CategoryFindFiltered.topic, <CategoryFindFiltered.Request>dto, {
-                headers: {
-                    requestId: this.uuidService.getUuid(),
+                CategoryFindFilteredQueryContract.Request,
+                CategoryFindFilteredQueryContract.Response
+            >(
+                CategoryFindFilteredQueryContract.topic,
+                <CategoryFindFilteredQueryContract.Request>dto,
+                {
+                    headers: {
+                        requestId: this.uuidService.getUuid(),
+                    },
                 },
-            });
+            );
         } catch (e) {
             if (e instanceof Error) {
                 throw new BadRequestException(e.message);
@@ -62,17 +70,21 @@ export class CategoryService {
     }
 
     public async findOne(
-        dto: CategoryFindOne.Request,
-    ): Promise<CategoryFindOne.Response> {
+        dto: CategoryFindOneUuidQueryContract.Request,
+    ): Promise<CategoryFindOneUuidQueryContract.Response> {
         try {
             return await this.rmqService.send<
-                CategoryFindOne.Request,
-                CategoryFindOne.Response
-            >(CategoryFindOne.topic, <CategoryFindOne.Request>dto, {
-                headers: {
-                    requestId: this.uuidService.getUuid(),
+                CategoryFindOneUuidQueryContract.Request,
+                CategoryFindOneUuidQueryContract.Response
+            >(
+                CategoryFindOneUuidQueryContract.topic,
+                <CategoryFindOneUuidQueryContract.Request>dto,
+                {
+                    headers: {
+                        requestId: this.uuidService.getUuid(),
+                    },
                 },
-            });
+            );
         } catch (e) {
             if (e instanceof Error) {
                 throw new BadRequestException(e.message);
@@ -83,16 +95,20 @@ export class CategoryService {
 
     public async update(
         dto: HttpCategoryUpdate.Request,
-    ): Promise<CategoryUpdate.Response> {
+    ): Promise<CategoryUpdateCommandContract.Response> {
         try {
             return await this.rmqService.send<
-                CategoryUpdate.Request,
-                CategoryUpdate.Response
-            >(CategoryUpdate.topic, <CategoryUpdate.Request>dto, {
-                headers: {
-                    requestId: this.uuidService.getUuid(),
+                CategoryUpdateCommandContract.Request,
+                CategoryUpdateCommandContract.Response
+            >(
+                CategoryUpdateCommandContract.topic,
+                <CategoryUpdateCommandContract.Request>dto,
+                {
+                    headers: {
+                        requestId: this.uuidService.getUuid(),
+                    },
                 },
-            });
+            );
         } catch (e) {
             if (e instanceof Error) {
                 throw new BadRequestException(e.message);
@@ -102,17 +118,21 @@ export class CategoryService {
     }
 
     public async remove(
-        dto: CategoryRemove.Request,
-    ): Promise<CategoryRemove.Response> {
+        dto: CategoryRemoveCommandContract.Request,
+    ): Promise<CategoryRemoveCommandContract.Response> {
         try {
             return await this.rmqService.send<
-                CategoryRemove.Request,
-                CategoryRemove.Response
-            >(CategoryRemove.topic, <CategoryRemove.Request>dto, {
-                headers: {
-                    requestId: this.uuidService.getUuid(),
+                CategoryRemoveCommandContract.Request,
+                CategoryRemoveCommandContract.Response
+            >(
+                CategoryRemoveCommandContract.topic,
+                <CategoryRemoveCommandContract.Request>dto,
+                {
+                    headers: {
+                        requestId: this.uuidService.getUuid(),
+                    },
                 },
-            });
+            );
         } catch (e) {
             if (e instanceof Error) {
                 throw new BadRequestException(e.message);

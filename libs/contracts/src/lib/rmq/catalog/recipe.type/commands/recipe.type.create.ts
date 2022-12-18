@@ -1,23 +1,16 @@
-import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
-import { IRecipeTypeEntity } from '@jerky/interfaces';
+import { RecipeType } from '@prisma/client/scripts/catalog-client';
+import { PickType } from '@nestjs/mapped-types';
+import { RecipeTypeDto } from '../recipe.type.dto';
 
 export namespace RecipeTypeCreate {
     export const topic = 'catalog.recipe-type-create.command';
 
-    export class Request {
-        @MaxLength(128)
-        @MinLength(4)
-        @IsString()
+    export class Request extends PickType(RecipeTypeDto, [
+        'title',
+        'description',
+    ] as const) {
         title: string;
-
-        @IsString()
-        @IsOptional()
-        comment?: string;
-
-        @IsString()
-        @IsOptional()
-        description?: string;
     }
 
-    export type Response = IRecipeTypeEntity;
+    export type Response = RecipeType;
 }

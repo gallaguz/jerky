@@ -1,16 +1,22 @@
-import { Controller, Body } from '@nestjs/common';
-import { IngredientService } from './ingredient.service';
+import { Controller, Body, ValidationPipe } from '@nestjs/common';
+import { IngredientService } from './services/ingredient.service';
 import {
     IngredientCreate,
     IngredientFindFiltered,
-    IngredientFindOne,
+    IngredientFindOneUuid,
     IngredientRemove,
     IngredientUpdate,
 } from '@jerky/contracts';
-import { RMQRoute, RMQValidate } from 'nestjs-rmq';
+import { RMQError, RMQRoute, RMQValidate } from 'nestjs-rmq';
+import { IController } from '../common';
+import { Ingredient } from '@prisma/client/scripts/catalog-client';
+import { IngredientFindOneTitle } from '@jerky/contracts';
+import { plainToInstance } from 'class-transformer';
+import { ERROR_TYPE } from 'nestjs-rmq/dist/constants';
+import { validate } from 'class-validator';
 
 @Controller()
-export class IngredientController {
+export class IngredientController implements IController<Ingredient> {
     constructor(private readonly ingredientService: IngredientService) {}
 
     @RMQValidate()
@@ -30,11 +36,19 @@ export class IngredientController {
     }
 
     @RMQValidate()
-    @RMQRoute(IngredientFindOne.topic)
-    public async findOne(
-        @Body() props: IngredientFindOne.Request,
-    ): Promise<IngredientFindOne.Response> {
-        return await this.ingredientService.findOne(props);
+    @RMQRoute(IngredientFindOneUuid.topic)
+    public async findOneUuid(
+        @Body() props: IngredientFindOneUuid.Request,
+    ): Promise<IngredientFindOneUuid.Response> {
+        return await this.ingredientService.findOneUuid(props);
+    }
+
+    @RMQValidate()
+    @RMQRoute(IngredientFindOneTitle.topic)
+    public async findOneTitle(
+        @Body() props: IngredientFindOneTitle.Request,
+    ): Promise<IngredientFindOneTitle.Response> {
+        return await this.ingredientService.findOneTitle(props);
     }
 
     @RMQValidate()
@@ -42,6 +56,8 @@ export class IngredientController {
     public async update(
         @Body() props: IngredientUpdate.Request,
     ): Promise<IngredientUpdate.Response> {
+        // return await this.validateContract(IngredientUpdate.Request, props);
+
         return await this.ingredientService.update(props);
     }
 
@@ -51,5 +67,24 @@ export class IngredientController {
         @Body() props: IngredientRemove.Request,
     ): Promise<IngredientRemove.Response> {
         return this.ingredientService.remove(props);
+    }
+
+    public async validateContract(contract: any, props: any): Promise<any> {
+        const transformed = plainToInstance(contract, props);
+        const validated = await validate(transformed);
+
+        if (validated.length > 0) {
+            const validationPipe = new ValidationPipe();
+            const exceptionFactory = validationPipe.createExceptionFactory();
+
+            throw new RMQError(
+                validated.toString(),
+                ERROR_TYPE.RMQ,
+                400,
+                exceptionFactory(validated),
+            );
+        }
+
+        return transformed;
     }
 }
