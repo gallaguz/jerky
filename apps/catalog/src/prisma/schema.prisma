@@ -1,138 +1,144 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = env("OUTPUT")
+    provider = "prisma-client-js"
+    output   = env("OUTPUT")
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("CATALOG_DATABASE_URL")
+    provider = "postgresql"
+    url      = env("CATALOG_DATABASE_URL")
 }
 
-/// Jerky | Sausages | ...
 model Category {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  uuid        String  @unique
-  title       String  @unique
-  description String?
+    alias       String  @unique()
+    title       String  @unique()
+    description String?
 
-  recipe  Recipe[]
-  product Product[]
-  raw     Raw[]
+    product Product[]
+    recipe  Recipe[]
 }
 
-/// Chicken | Beef | Hindi | Fish | ...
+// meet / fish / bird
+model RawType {
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
+
+    alias       String  @unique()
+    title       String  @unique()
+    description String?
+
+    product Product[]
+    recipe  Recipe[]
+}
+
+// chicken / beef / salmon
 model Raw {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  uuid        String  @unique
-  title       String  @unique
-  description String?
+    alias       String  @unique()
+    title       String  @unique()
+    description String?
+    price       Float
+    payload     Float
 
-  price Float
-
-  category Category[]
-  recipe   Recipe[]
-  product  Product[]
+    product Product[]
+    recipe  Recipe[]
 }
 
-/// Salty | Spicy | Marinated | Special | BBQ | ...
+// salty / special / spicy
 model RecipeType {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  uuid        String  @unique
-  title       String  @unique
-  description String?
+    alias       String  @unique()
+    title       String  @unique()
+    description String?
 
-  recipe  Recipe[]
-  product Product[]
+    product Product[]
+    recipe  Recipe[]
 }
 
-///
+// best recipe / for beer
 model Recipe {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  uuid        String  @unique
-  title       String
-  description String?
+    alias       String  @unique()
+    title       String  @unique()
+    description String?
 
-  recipeTypeUuid String
-  categoryUuid   String
-  rawUuid        String
-  recipeType     RecipeType      @relation(fields: [recipeTypeUuid], references: [uuid])
-  category       Category        @relation(fields: [categoryUuid], references: [uuid])
-  raw            Raw             @relation(fields: [rawUuid], references: [uuid])
-  ingredientQty  IngredientQty[]
-  products       Product[]
+    ingredientCoefficient IngredientCoefficient[]
+    product               Product[]
+    category              Category[]
+    raw                   Raw[]
+    rawType               RawType[]
+    recipeType            RecipeType[]
 }
 
-/// Jerky Chicken Marinated | Sausages Beef Salty | ...
+//
 model Product {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  uuid        String  @unique
-  title       String
-  description String?
+    alias       String  @unique()
+    title       String  @unique()
+    description String?
+    price       Int?
 
-  price       Int?
+    recipe     Recipe? @relation(fields: [recipeUuid], references: [uuid])
+    recipeUuid String?
 
-  recipeTypeUuid String
-  categoryUuid   String
-  rawUuid        String
-  recipeUuid     String
-  category       Category   @relation(fields: [categoryUuid], references: [uuid])
-  raw            Raw        @relation(fields: [rawUuid], references: [uuid])
-  recipeType     RecipeType @relation(fields: [recipeTypeUuid], references: [uuid])
-  recipe         Recipe     @relation(fields: [recipeUuid], references: [uuid])
+    category   Category[]
+    raw        Raw[]
+    rawType    RawType[]
+    recipeType RecipeType[]
 }
 
-/// Salt | Red Paper | Black Paper | Paprika | Nitrit Salt | Coreander | ...
+// salt / paper / carry
 model Ingredient {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  uuid        String          @unique
-  title       String
-  form        IngredientForm?
-  description String?
+    alias       String  @unique()
+    title       String
+    description String?
 
-  price Float
+    type    String
+    price   Float
+    payload Float
 
-  ingredientQty IngredientQty[]
+    ingredientCoefficient IngredientCoefficient[]
 }
 
-/// Ingredient Quantity per one kg
-model IngredientQty {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// qty coefficient per one kg
+model IngredientCoefficient {
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt()
 
-  uuid String @unique
+    coefficient Float
 
-  qtyPerKg Float
+    recipe     Recipe? @relation(fields: [recipeUuid], references: [uuid])
+    recipeUuid String?
 
-  recipe     Recipe[]
-  ingredient Ingredient[]
-}
-
-
-
-enum IngredientForm {
-  SAND
-  FLAKES
-  POWDER
-  LIQUOR
-  SPLIT
-  VISCOUS
+    ingredient     Ingredient? @relation(fields: [ingredientUuid], references: [uuid])
+    ingredientUuid String?
 }
