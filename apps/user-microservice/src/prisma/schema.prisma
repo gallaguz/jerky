@@ -1,0 +1,28 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = env("CLIENT_OUTPUT")
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        Int      @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    uuid         String   @unique @default(uuid())
+    email        String   @unique
+    passwordHash String
+    salt         String
+    role         UserRole
+}
+
+enum UserRole {
+    MODERATOR
+    USER
+    CUSTOMER
+    ADMIN
+}

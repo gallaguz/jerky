@@ -1,0 +1,72 @@
+{
+    "name": "authorization-microservice",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/authorization-microservice/src",
+    "projectType": "application",
+    "targets": {
+        "build": {
+            "executor": "@nrwl/webpack:webpack",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "target": "node",
+                "compiler": "tsc",
+                "outputPath": "dist/apps/authorization-microservice",
+                "main": "apps/authorization-microservice/src/main.ts",
+                "tsConfig": "apps/authorization-microservice/tsconfig.app.json",
+                "assets": ["apps/authorization-microservice/src/assets"]
+            },
+            "configurations": {
+                "production": {
+                    "optimization": true,
+                    "extractLicenses": true,
+                    "inspect": false,
+                    "fileReplacements": [
+                        {
+                            "replace": "apps/authorization-microservice/src/environments/environment.ts",
+                            "with": "apps/authorization-microservice/src/environments/environment.prod.ts"
+                        }
+                    ]
+                }
+            }
+        },
+        "serve": {
+            "executor": "@nrwl/js:node",
+            "options": {
+                "buildTarget": "authorization-microservice:build"
+            },
+            "configurations": {
+                "production": {
+                    "buildTarget": "authorization-microservice:build:production"
+                }
+            }
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["apps/authorization-microservice/**/*.ts"]
+            }
+        },
+        "testBase": {
+            "executor": "@nrwl/jest:jest",
+            "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+            "options": {
+                "jestConfig": "apps/authorization-microservice/jest.config.ts",
+                "passWithNoTests": true
+            }
+        },
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "env-cmd -e authorization-microservice-development,amqp-development,jwt-development nx run authorization-microservice:serve"
+            }
+        },
+        "test": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "env-cmd -e authorization-microservice-test,amqp-test,jwt-test nx run authorization-microservice:testBase"
+            }
+        }
+    },
+    "tags": []
+}

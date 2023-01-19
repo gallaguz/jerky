@@ -1,0 +1,23 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = env("CLIENT_OUTPUT")
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model RefreshToken {
+    id        Int      @id @default(autoincrement())
+    uuid      String   @unique @default(uuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    isActive Boolean @default(true)
+    userUuid String
+    iat      Int
+    exp      Int
+
+    token String @unique
+}

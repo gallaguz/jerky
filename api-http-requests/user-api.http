@@ -1,0 +1,18 @@
+### Remove
+DELETE http://localhost:3333/api/v1/user/1042c686-b14e-40ba-b36c-653e172a1863
+Content-Type: application/json
+
+### Remove
+DELETE http://localhost:3333/api/v1/user/notUuid
+Content-Type: application/json
+
+### Create
+POST http://localhost:3333/api/v1/user/create
+Content-Type: application/json
+
+{
+    "email": "email@email.com",
+    "password": "password",
+    "lol": "lol"
+}
+

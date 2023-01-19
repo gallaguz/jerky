@@ -1,0 +1,72 @@
+{
+    "name": "api-microservice",
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "apps/api-microservice/src",
+    "projectType": "application",
+    "targets": {
+        "build": {
+            "executor": "@nrwl/webpack:webpack",
+            "outputs": ["{options.outputPath}"],
+            "options": {
+                "target": "node",
+                "compiler": "tsc",
+                "outputPath": "dist/apps/api-microservice",
+                "main": "apps/api-microservice/src/main.ts",
+                "tsConfig": "apps/api-microservice/tsconfig.app.json",
+                "assets": ["apps/api-microservice/src/assets"]
+            },
+            "configurations": {
+                "production": {
+                    "optimization": true,
+                    "extractLicenses": true,
+                    "inspect": false,
+                    "fileReplacements": [
+                        {
+                            "replace": "apps/api-microservice/src/environments/environment.ts",
+                            "with": "apps/api-microservice/src/environments/environment.prod.ts"
+                        }
+                    ]
+                }
+            }
+        },
+        "serve": {
+            "executor": "@nrwl/js:node",
+            "options": {
+                "buildTarget": "api-microservice:build"
+            },
+            "configurations": {
+                "production": {
+                    "buildTarget": "api-microservice:build:production"
+                }
+            }
+        },
+        "lint": {
+            "executor": "@nrwl/linter:eslint",
+            "outputs": ["{options.outputFile}"],
+            "options": {
+                "lintFilePatterns": ["apps/api-microservice/**/*.ts"]
+            }
+        },
+        "testBase": {
+            "executor": "@nrwl/jest:jest",
+            "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+            "options": {
+                "jestConfig": "apps/api-microservice/jest.config.ts",
+                "passWithNoTests": true
+            }
+        },
+        "dev": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "env-cmd -e api-microservice-development,amqp-development,jwt-development nx run api-microservice:serve"
+            }
+        },
+        "test": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "env-cmd -e api-microservice-test,amqp-test,jwt-test nx run api-microservice:testBase"
+            }
+        }
+    },
+    "tags": []
+}
