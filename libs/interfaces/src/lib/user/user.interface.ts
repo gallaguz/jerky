@@ -1,21 +1,42 @@
-import { Role } from '@jerky/enums';
+import { UserRole } from '@prisma/client/scripts/user-client';
+
+import { TModelBase } from '../common';
 import { IDomainEvent } from '../domain';
 
-export interface IUserEntity {
+export interface IBaseUserEntity {
+    uuid: string;
+    createdAt: Date;
+    updatedAt: Date;
+    passwordHash: string;
+    salt: string;
     email: string;
-    passwordHash?: string;
-    role?: TRole;
+    role: UserRole;
     events: IDomainEvent[];
 }
 
-export interface IUser {
-    id?: number;
-    createdAt: Date;
-    updatedAt: Date;
-    uuid: string;
+export type TUserCredentials = {
     email: string;
-    passwordHash: string;
-    role: Role;
-}
+    password: string;
+    role: UserRole;
+};
 
-export type TRole = typeof Role[keyof typeof Role];
+export type TUserModelBase = TModelBase & {
+    passwordHash?: string | null;
+    salt?: string | null;
+    email?: string | null;
+    role?: UserRole | null;
+};
+
+export type TUser = TUserModelBase;
+
+export type TRole = typeof UserRole[keyof typeof UserRole];
+
+export type TUserUpdateBase = {
+    createdAt?: Date | null;
+    updatedAt?: Date | null;
+    passwordHash?: string | null;
+    salt?: string | null;
+    email?: string | null;
+    role?: UserRole | null;
+};
+export type TUserUpdate = TUserUpdateBase;

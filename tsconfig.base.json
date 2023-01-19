@@ -26,20 +26,7 @@
             "@jerky/common": ["libs/common/src/index.ts"],
             "@jerky/constants": ["libs/constants/src/index.ts"],
             "@jerky/contracts": ["libs/contracts/src/index.ts"],
-            "@jerky/enums": ["libs/enums/src/index.ts"],
             "@jerky/interfaces": ["libs/interfaces/src/index.ts"]
-        }
-    },
-    "ts-node": {
-        "compilerOptions": {
-            "module": "CommonJS",
-            "paths": {
-                "@jerky/common": ["libs/common/src/index.ts"],
-                "@jerky/constants": ["libs/constants/src/index.ts"],
-                "@jerky/contracts": ["libs/contracts/src/index.ts"],
-                "@jerky/enums": ["libs/enums/src/index.ts"],
-                "@jerky/interfaces": ["libs/interfaces/src/index.ts"]
-            }
         }
     },
     "exclude": ["node_modules", "tmp"]

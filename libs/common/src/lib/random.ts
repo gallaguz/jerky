@@ -1,5 +1,5 @@
 export namespace Random {
-    export const pickNumberInRange = (min: number, max: number): number =>
+    export const pickNumberInRange = (min = 1, max = 1e5): number =>
         Math.floor(Math.random() * (max - min + 1)) + min;
     export const pickNumber = (): number => Math.floor(Math.random() * 100);
     export const pickObj = <T>(items: T[], count = 1): T[] => {

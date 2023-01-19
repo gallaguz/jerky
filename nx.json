@@ -40,5 +40,5 @@
         ],
         "sharedGlobals": []
     },
-    "defaultProject": "api"
+    "defaultProject": "api-microservice"
 }

@@ -1,4 +1,5 @@
 export namespace ERROR_MESSAGES {
+    export const INCLUDE_SELECT = `Please either use "include" or "select", but not both at the same time.`;
     export const SOMETHING_WENT_WRONG = 'Something went wrong';
 
     export enum JWT {
@@ -44,6 +45,11 @@ export namespace ERROR_MESSAGES {
         MUST_BE_SHORTER = 'password - must be shorter then 64 chars',
     }
 
+    export enum ALIAS {
+        MUST_BE_LONGER = 'alias - must be longer than or equal to 4 characters',
+        MUST_BE_SHORTER = 'alias - must be shorter than or equal to 32 characters',
+        MUST_BE_A_STRING = 'alias - must be a string',
+    }
     export enum TITLE {
         MUST_BE_LONGER = 'title - must be longer than or equal to 4 characters',
         MUST_BE_SHORTER = 'title - must be shorter than or equal to 128 characters',
@@ -57,9 +63,5 @@ export namespace ERROR_MESSAGES {
     export enum PRICE {
         MUST_BE_A_POSITIVE = 'price - must be a positive number number',
         MUST_BE_A_NUMBER = 'price - must be a number',
-    }
-
-    export enum IngredientFormE {
-        MUST_BE_ONE_OF_THIS = 'form - must be: Sand/Flakes/Powder/Liquor/Split/Viscous',
     }
 }
