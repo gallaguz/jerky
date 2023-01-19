@@ -1,0 +1,122 @@
+version: '3.1'
+
+services:
+    dev-rmq-1:
+        image: rabbitmq:3-management
+        container_name: dev-rmq-1
+        restart: always
+        environment:
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+        ports:
+            - '15672:15672'
+            - '5672:5672'
+
+    dev-postgres-1:
+        image: postgres:13.3-alpine
+        container_name: dev-postgres-1
+        restart: always
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        logging:
+            options:
+                max-size: ${POSTGRES_MAX_LOG_SIZE}
+                max-file: ${POSTGRES_MAX_LOG_FILES}
+        ports:
+            - '5432:5432'
+        volumes:
+            - postgres-1:/var/lib/postgresql/data
+
+    dev-postgres-2:
+        image: postgres:13.3-alpine
+        container_name: dev-postgres-2
+        restart: always
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        logging:
+            options:
+                max-size: ${POSTGRES_MAX_LOG_SIZE}
+                max-file: ${POSTGRES_MAX_LOG_FILES}
+        ports:
+            - '5433:5432'
+        volumes:
+            - postgres-2:/var/lib/postgresql/data
+
+    dev-postgres-3:
+        image: postgres:13.3-alpine
+        container_name: dev-postgres-3
+        restart: always
+        environment:
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        logging:
+            options:
+                max-size: ${POSTGRES_MAX_LOG_SIZE}
+                max-file: ${POSTGRES_MAX_LOG_FILES}
+        ports:
+            - '5434:5432'
+        volumes:
+            - postgres-3:/var/lib/postgresql/data
+
+    dev-mongo-1:
+        image: mongo:4.4.4
+        container_name: dev-mongo-1
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        ports:
+            - '27017:27017'
+        volumes:
+            - mongo-1:/data/db
+
+    dev-mongo-2:
+        image: mongo:4.4.4
+        container_name: dev-mongo-2
+        restart: always
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+            MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+        ports:
+            - '27018:27017'
+        volumes:
+            - mongo-2:/data/db
+
+    dev-mysql-1:
+        image: mysql:5.7
+        restart: always
+        container_name: dev-mysql-1
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        ports:
+            - '3306:3306'
+        volumes:
+            - mysql-1:/var/lib/mysql
+
+    dev-mysql-2:
+        image: mysql:5.7
+        restart: always
+        container_name: dev-mysql-2
+        environment:
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        ports:
+            - '3307:3306'
+        volumes:
+            - mysql-2:/var/lib/mysql
+
+volumes:
+    mongo-1:
+    mongo-2:
+    postgres-1:
+    postgres-2:
+    postgres-3:
+    mysql-1:
+    mysql-2:
