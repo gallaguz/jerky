@@ -5,8 +5,8 @@ import {
     PrismaClient,
 } from '@prisma/client/scripts/catalog-client';
 
-import { INGREDIENT_TYPES } from '../../../../../libs/constants/src/lib/ingredient-types';
 import IngredientCreateInput = Prisma.IngredientCreateInput;
+import { INGREDIENT_TYPES } from '@jerky/constants';
 import * as crypto from 'crypto';
 import * as slug from 'slug';
 
