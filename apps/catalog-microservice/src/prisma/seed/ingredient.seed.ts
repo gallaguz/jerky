@@ -6,11 +6,25 @@ import {
 } from '@prisma/client/scripts/catalog-client';
 
 import IngredientCreateInput = Prisma.IngredientCreateInput;
-import { INGREDIENT_TYPES } from '@jerky/constants';
+
 import * as crypto from 'crypto';
 import * as slug from 'slug';
 
 import { pickKey, pickNumberInRange } from './common/helper';
+
+export const INGREDIENT_TYPES: Record<string, string> = {
+    piece: 'piece',
+    granule: 'granule',
+    whole: 'whole',
+    seeds: 'seeds',
+    sand: 'sand',
+    powder: 'powder',
+    flakes: 'flakes',
+    split: 'split',
+    liquor: 'liquor',
+    viscous: 'viscous',
+    other: 'other',
+};
 
 const prismaClient = new PrismaClient();
 
