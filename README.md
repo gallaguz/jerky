@@ -14,13 +14,22 @@ Used contracts: external and internal.  Full data validation is present.
 In the process of writing: services: order, shopping cart, promo/discounts, event processing and log service.  Swagger.
 
 
-```shell
-cp .env.example  .env
-cp .env-cmdrc.json.example .env-cmdrc.json
-npm ci
-docker-compose up -d
-npm run prisma:generate
-npm run prisma:migrate:dev
-npm run dev
 
+```shell
+# clone this repository
+
+# install dependencies
+npm ci
+# base envs for docker-compose
+cp .env.example .env
+# base envs for apps
+cp .env-cmdrc.json.example .env-cmdrc.json
+# launch containers
+docker-compose up -d
+# generate prisma clients
+npm run prisma:generate
+# migrate to db in dev mode
+npm run prisma:migrate:dev
+# run apps in dev mode
+npm run dev
 ```
