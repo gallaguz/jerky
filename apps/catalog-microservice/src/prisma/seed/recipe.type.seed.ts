@@ -4,6 +4,7 @@ import {
     RecipeType,
 } from '@prisma/client/scripts/catalog-client';
 import RecipeTypeCreateInput = Prisma.RecipeTypeCreateInput;
+import * as process from 'process';
 import * as slug from 'slug';
 
 const prismaClient = new PrismaClient();

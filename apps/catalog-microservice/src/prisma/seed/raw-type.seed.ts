@@ -3,6 +3,7 @@ import {
     PrismaClient,
     RawType,
 } from '@prisma/client/scripts/catalog-client';
+import * as process from 'process';
 import * as slug from 'slug';
 import RawTypeCreateInput = Prisma.RawTypeCreateInput;
 

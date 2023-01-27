@@ -10,6 +10,7 @@ import {
 } from '@prisma/client/scripts/catalog-client';
 import ProductCreateInput = Prisma.ProductCreateInput;
 import * as crypto from 'crypto';
+import * as process from 'process';
 import * as slug from 'slug';
 
 import { pickObj } from './common/helper';

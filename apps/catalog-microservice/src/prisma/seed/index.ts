@@ -6,6 +6,7 @@ import {
     Recipe,
     RecipeType,
 } from '@prisma/client/scripts/catalog-client';
+import * as process from 'process';
 
 import { seedCategories } from './category.seed';
 import { seedIngredients } from './ingredient.seed';

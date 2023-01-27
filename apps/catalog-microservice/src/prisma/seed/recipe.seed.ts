@@ -9,6 +9,7 @@ import {
     RecipeType,
 } from '@prisma/client/scripts/catalog-client';
 import RecipeCreateInput = Prisma.RecipeCreateInput;
+import * as process from 'process';
 import * as slug from 'slug';
 
 import { pickNumberInRange, pickObj } from './common/helper';

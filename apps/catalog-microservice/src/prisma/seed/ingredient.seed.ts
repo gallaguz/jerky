@@ -8,6 +8,7 @@ import {
 import IngredientCreateInput = Prisma.IngredientCreateInput;
 
 import * as crypto from 'crypto';
+import * as process from 'process';
 import * as slug from 'slug';
 
 import { pickKey, pickNumberInRange } from './common/helper';

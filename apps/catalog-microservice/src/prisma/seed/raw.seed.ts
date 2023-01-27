@@ -4,6 +4,7 @@ import {
     Raw,
 } from '@prisma/client/scripts/catalog-client';
 import RawCreateInput = Prisma.RawCreateInput;
+import * as process from 'process';
 import * as slug from 'slug';
 
 const prismaClient = new PrismaClient();
